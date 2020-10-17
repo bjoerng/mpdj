@@ -2,7 +2,7 @@
 '''
 Created on 12.09.2020
 
-@author: hiroaki
+@author: Bjoern Graebe
 '''
 
 from PyQt5.Qt import QApplication

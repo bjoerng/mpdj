@@ -1,7 +1,7 @@
 '''
 Created on 12.09.2020
 
-@author: hiroaki
+@author: Bjoern Graebe
 '''
 class CannotConnectToMPDError(Exception):
     pass

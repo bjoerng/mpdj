@@ -2,10 +2,10 @@
 '''
 Created on 12.09.2020
 
-@author: hiroaki
+@author: Bjoern Graebe
 '''
 
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTableWidget, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QPushButton, QLabel
 from model.song_selection import SongSelection
 from PyQt5.Qt import QLineEdit, QHBoxLayout, Qt
 from control.global_properties import GlobalProperties
@@ -30,7 +30,7 @@ class SelectionWindow(QWidget):
         QWidget.__init__(self)
         
         self.possibleTags = list(map(lambda tagType: tagType.lower(),
-                                     GlobalProperties.getInstance().connection.getPossibleTags()))
+                                     GlobalProperties.getInstance().mpdConnection.getPossibleTags()))
         self.window = QWidget()
         self.window.setWindowTitle('Create selection')
         self.mainLayout = QVBoxLayout()
@@ -48,7 +48,7 @@ class SelectionWindow(QWidget):
         self.labelWhiteListCriterias.setText('White list criterias:')
         self.mainLayout.addWidget(self.labelWhiteListCriterias)
         self.selectionWhiteListTable = QTableWidget()
-        self.prepateTableFromTags(self.selectionWhiteListTable, self.possibleTags)
+        self.prepareTableFromTags(self.selectionWhiteListTable, self.possibleTags)
         self.mainLayout.addWidget(self.selectionWhiteListTable)
         
         self.btAddLineToWhiteListTableLayout=QHBoxLayout()
@@ -69,7 +69,7 @@ class SelectionWindow(QWidget):
         self.labelBlackListCriterias.setText('Black list criterias:')
         self.mainLayout.addWidget(self.labelBlackListCriterias)
         self.selectionBlackListTable = QTableWidget()
-        self.prepateTableFromTags(self.selectionBlackListTable, self.possibleTags)
+        self.prepareTableFromTags(self.selectionBlackListTable, self.possibleTags)
         self.mainLayout.addWidget(self.selectionBlackListTable)
         
         self.btAddLineToBlackListTableLayout=QHBoxLayout()
@@ -110,13 +110,12 @@ class SelectionWindow(QWidget):
                 selectionCriteria[tagType] = tagValueItem.text()
         return selectionCriteria
    
-    def prepateTableFromTags(self, pTable : QTableWidget, pTags):
-        pTable.setRowCount(1)     
+    def prepareTableFromTags(self, pTable : QTableWidget, pTags):
+        pTable.setRowCount(1)
         pTable.setColumnCount(len(pTags))
         pTable.setHorizontalHeaderLabels(pTags)
         
     def createSongSelection(self):
-        print('createSongSelection')
         selectionName = self.tfSelectionName.text()
         songSelection = SongSelection(selectionName)
         whiteListCriterias = self.createSelectionFromTable(self.selectionWhiteListTable)
@@ -125,6 +124,7 @@ class SelectionWindow(QWidget):
         songSelection.setBlackListCriterias(blackListCriterias)
         gp = GlobalProperties.getInstance()
         gp.mpdjData.addSongSelection(songSelection)
+        gp.informUpdateListener()
         clearTable(self.selectionWhiteListTable)
         clearTable(self.selectionBlackListTable)
         

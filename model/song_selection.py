@@ -45,7 +45,7 @@ class SongSelection(object):
         
     def getSongsMatchingWhitelist(self):
         results = []
-        connection = GlobalProperties.getInstance().connection
+        connection = GlobalProperties.getInstance().mpdConnection
         for criteria in self.listOfWhiteListCriterias:
             criteriaResults = connection.getFilesMatchingCriteria(criteria)
             results += criteriaResults
@@ -61,3 +61,5 @@ class SongSelection(object):
     def __str__(self):
         return self.name.__str__() + '\n' + 'Whiteliste:\n' + self.listOfWhiteListCriterias.__str__() + '\nBlacklist:\n' + self.listOfBlackListCriterias.__str__()
     
+    def getName(self):
+        return self.name

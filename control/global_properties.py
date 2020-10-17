@@ -19,6 +19,15 @@ class GlobalProperties(object):
             GlobalProperties()
         return GlobalProperties.__instance
     
+    def addListener(self, pListener):
+        self.updateListeners.append(pListener)
+        
+    def informUpdateListener(self):
+        for updateListener in self.updateListeners:
+            updateListener.update()
+            
+
+    
     def __init__(self):
         """ Virtually private constructor. """
         if GlobalProperties.__instance != None:
@@ -27,7 +36,8 @@ class GlobalProperties(object):
             GlobalProperties.__instance = self
             self.host = 'localhost'
             self.port = '6600'
-            self.connection = MPDConnection(self.host, self.port)
-            self.connection.connect()
+            self.mpdConnection = MPDConnection(self.host, self.port)
+            self.mpdConnection.connect()
             self.mpdjData = MPDJData()
-        
+            self.updateListeners = []#
+            self.graphIsDirected = False

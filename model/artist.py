@@ -1,7 +1,7 @@
 '''
 Created on 27.09.2020
 
-@author: hiroaki
+@author: Bjoern Graebe
 '''
 
 class Artist(object):
