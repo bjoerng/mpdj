@@ -5,7 +5,7 @@ Created on 12.09.2020
 @author: Bjoern Graebe
 '''
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QPushButton, QLabel,QMessageBox
 from model.song_selection import SongSelection
 from PyQt5.Qt import QLineEdit, QHBoxLayout, Qt
 from control.global_properties import GlobalProperties
@@ -116,18 +116,26 @@ class SelectionWindow(QWidget):
         pTable.setHorizontalHeaderLabels(pTags)
         
     def createSongSelection(self):
+        gp = GlobalProperties.getInstance()
         selectionName = self.tfSelectionName.text()
+        if gp.mpdjData.selectionWithNameExists(selectionName):
+            messageBox = QMessageBox()
+            messageBox.setText('A Selection with the name {} already exists.'.format(selectionName))
+            messageBox.setWindowTitle('Song selection will not be added.')
+            messageBox.setStandardButtons(QMessageBox.Ok)
+            messageBox.setIcon(QMessageBox.Information)
+            messageBox.exec_()
+            return
         songSelection = SongSelection(selectionName)
         whiteListCriterias = self.createSelectionFromTable(self.selectionWhiteListTable)
         songSelection.setWhiteListCriterias(whiteListCriterias)
         blackListCriterias = self.createSelectionFromTable(self.selectionBlackListTable)
         songSelection.setBlackListCriterias(blackListCriterias)
-        gp = GlobalProperties.getInstance()
         gp.mpdjData.addSongSelection(songSelection)
         gp.informUpdateListener()
         clearTable(self.selectionWhiteListTable)
         clearTable(self.selectionBlackListTable)
-        
+        self.tfSelectionName.setText('')
     def addRowToWhiteListTable(self):
         addEmptyRowToTable(self.selectionWhiteListTable)
 

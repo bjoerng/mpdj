@@ -1,7 +1,7 @@
 '''
 Created on 13.09.2020
 
-@author: hiroaki
+@author: Bjoern Graebe
 '''
 from control.global_properties import GlobalProperties
 

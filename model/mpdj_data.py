@@ -4,6 +4,7 @@ Created on 20.09.2020
 @author: Bjoern Graebe
 '''
 from model.artist import Artist
+
 class MPDJData(object):
     '''
     classdocs
@@ -58,4 +59,11 @@ class MPDJData(object):
         result = list(map(lambda songSelection: songSelection.getName(), self.songSelections))
         return result
     
+    def selectionWithNameExists(self,pSelectionName):
+        selectionNames = list(map(lambda selection: selection.getName(), self.songSelections))
+        return pSelectionName in selectionNames
+    
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
 

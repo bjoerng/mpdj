@@ -54,6 +54,7 @@ class ConnectionTableWidget(QTableWidget):
         artistcolumn = self.verticalHeaderItem(row).text()
         gp = GlobalProperties.getInstance()
         gp.mpdjData.setConnected(artistcolumn,artistRow,artistConnectionValue)
+        gp.informUpdateListener()
         
     def __init__(self):
         '''

@@ -1,10 +1,12 @@
 '''
 Created on 20.09.2020
 
-@author: hiroaki
+@author: Bjoern Graebe
 '''
 from model.mpd_connection import MPDConnection
 from model.mpdj_data import MPDJData
+import jsonpickle
+
 
 
 class GlobalProperties(object):
@@ -27,7 +29,15 @@ class GlobalProperties(object):
             updateListener.update()
             
 
+    def saveMPDJDataToFile(self, pFileName):
+        with open(pFileName, 'w') as saveFile:
+            saveFile.write(jsonpickle.encode(self.mpdjData))
     
+    def loadMPDJDataToFile(self, pFileName):
+        with open(pFileName, 'r') as loadFile:
+            self.mpdjData = jsonpickle.decode(loadFile.read())
+        self.informUpdateListener()
+
     def __init__(self):
         """ Virtually private constructor. """
         if GlobalProperties.__instance != None:
@@ -39,5 +49,5 @@ class GlobalProperties(object):
             self.mpdConnection = MPDConnection(self.host, self.port)
             self.mpdConnection.connect()
             self.mpdjData = MPDJData()
-            self.updateListeners = []#
-            self.graphIsDirected = False
+            self.updateListeners = []
+            self.PathOfCurrentFile = ''
