@@ -6,7 +6,6 @@ Created on 12.09.2020
 '''
 
 from PyQt5.Qt import QApplication
-
 from gui.main_window import MainWindowMPDJ
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ Created on 13.09.2020
 
 @author: Bjoern Graebe
 '''
-from control.global_properties import GlobalProperties
+#from control.global_properties import GlobalProperties
 
 def isSongMatchingCriteria(pSong : dict, pCriteria : dict):
     if len(pCriteria) == 0:
@@ -29,7 +29,7 @@ class SongSelection(object):
         self.listOfWhiteListCriterias = []
         self.listOfBlackListCriterias = []
         self.name = pName
-        self.liftOfNeibours = []
+#        self.liftOfeighbors = []
         
     def setWhiteListCriterias(self, pWhiteListCriterias : list):
         self.listOfWhiteListCriterias = pWhiteListCriterias
@@ -43,13 +43,13 @@ class SongSelection(object):
     def addBlackListCriterias(self, pCriteria: dict):
         self.listOfBlackListCriterias += pCriteria
         
-    def getSongsMatchingWhitelist(self):
-        results = []
-        connection = GlobalProperties.getInstance().mpdConnection
-        for criteria in self.listOfWhiteListCriterias:
-            criteriaResults = connection.getFilesMatchingCriteria(criteria)
-            results += criteriaResults
-        return results
+#     def getSongsMatchingWhitelist(self):
+#         results = []
+#         connection = GlobalProperties.getInstance().mpdConnection
+#         for criteria in self.listOfWhiteListCriterias:
+#             criteriaResults = connection.getFilesMatchingCriteria(criteria)
+#             results += criteriaResults
+#         return results
         
     def getSongs(self,):
         print('getSongs')
@@ -63,3 +63,6 @@ class SongSelection(object):
     
     def getName(self):
         return self.name
+    
+    def __repr__(self):
+        return "Name: " + self.name + ", WhiteList: " + self.listOfWhiteListCriterias.__repr__() + ", BlackList: " + self.listOfBlackListCriterias.__repr__()

@@ -6,7 +6,7 @@ Created on 12.09.2020
 class CannotConnectToMPDError(Exception):
     pass
 
-from mpd import MPDClient
+from mpd import MPDClient,ConnectionError
 
 class MPDConnection(object):
     def __init__(self,pHost,pPort):

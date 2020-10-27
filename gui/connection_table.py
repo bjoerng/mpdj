@@ -3,8 +3,10 @@ Created on 11.10.2020
 
 @author: Bjoern Graebe
 '''
-from PyQt5.Qt import QTableWidget, QComboBox
+from PyQt5.Qt import QTableWidget, QComboBox, QMenu
+from PyQt5.QtCore import Qt
 from control.global_properties import GlobalProperties
+from gui.selection_window import SelectionWindow,WindowMode
 
 class ConnectionTableWidget(QTableWidget):
     '''
@@ -21,9 +23,9 @@ class ConnectionTableWidget(QTableWidget):
         self.setColumnCount(numberOfSelection)
         self.setHorizontalHeaderLabels(songSelectionNames)
         self.setVerticalHeaderLabels(songSelectionNames)
-        self.initiateComboxBoxes()
+        self.initiateComboBoxes()
         
-    def initiateComboxBoxes(self):
+    def initiateComboBoxes(self):
         columnCount = self.columnCount()
         rowCount = self.rowCount()
         self.blockSignals(True)
@@ -56,9 +58,40 @@ class ConnectionTableWidget(QTableWidget):
         gp.mpdjData.setConnected(artistcolumn,artistRow,artistConnectionValue)
         gp.informUpdateListener()
         
+    
+    def showHeaderRightClickMenu(self, position):
+        menu = QMenu()
+        removeSelection = menu.addAction('Remove song selection')
+        changeSelection = menu.addAction('Change song selection')
+        action = menu.exec_(self.mapToGlobal(position))
+        print (position)
+        logicalIndexX = self.horizontalHeaders.logicalIndexAt(position.x())
+        logicalIndexY = self.verticalHeaders.logicalIndexAt(position.y())
+        print ( str(logicalIndexX) + ',' + str(logicalIndexY))
+        nameOfSelection = ''
+        if logicalIndexX > logicalIndexY:
+            nameOfSelection = self.verticalHeaderItem(logicalIndexX).text()
+        else:
+            nameOfSelection = self.horizontalHeaderItem(logicalIndexY).text()
+        gp = GlobalProperties.getInstance()
+        if action == removeSelection:
+            gp.mpdjData.removeSongSelectionByName(nameOfSelection)
+            gp.informUpdateListener()
+        if action == changeSelection:
+            selectionWindow = SelectionWindow(nameOfSelection, WindowMode.edit)
+            selectionWindow.show()
+            
+
     def __init__(self):
         '''
         Constructor
         '''
         QTableWidget.__init__(self)
-        self.initiateComboxBoxes()
+        self.initiateComboBoxes()
+        self.horizontalHeaders = self.horizontalHeader()
+        self.horizontalHeaders.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.horizontalHeaders.customContextMenuRequested.connect(self.showHeaderRightClickMenu)
+        self.verticalHeaders = self.verticalHeader()
+        self.verticalHeaders.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.verticalHeaders.customContextMenuRequested.connect(self.showHeaderRightClickMenu)
+        #headers.setSelectionMode(QAbstractItemView.SingleSelection)
