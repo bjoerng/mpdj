@@ -5,7 +5,14 @@ Created on 20.09.2020
 '''
 from model.artist import Artist
 from model.song_selection import SongSelection
-#from gui.selection_window import SelectionWindow, WindowMode
+from enum import Enum
+
+class UnitPerBodeTouch(Enum):
+    MINUTES = 1
+    SONGS = 2
+    
+    def guiRepresentation(self):
+        return self.name.lower()
 
 
 class MPDJData(object):
@@ -18,11 +25,13 @@ class MPDJData(object):
         Constructor
         '''
         self.songSelections = dict()
-        self.minSongsPerGenre = 1
-        self.maxSongsPerGenre = 5
-        self.playedArtists = dict()
-        self.selectionConnections = dict()
+        self.minUnitsPerNodeTouch = 1
+        self.maxUnitsPerNodeTouch = 5
+        self.unitPerNodeTouch = UnitPerBodeTouch.MINUTES
+#        self.playedArtists = dict()
         self.graphIsDirected = False
+        self.selectionConnections = dict()
+        self.limitArtistinNodeTouch = False
         
     def playTitle(self, pArtist : str, pTitle : str):
         if not pArtist in self.playedArtists:
@@ -40,7 +49,7 @@ class MPDJData(object):
         if not pArtist1 in self.selectionConnections:
             self.selectionConnections[pArtist1] = dict()
         self.selectionConnections[pArtist1][pArtist2]=pIsConnected
-        if pMarkOppositDirection and not self.graphIsDirected:
+        if pMarkOppositDirection and not self.chkBoxGraphIsDirected:
             self.setConnected(pArtist2,pArtist1,pIsConnected,pMarkOppositDirection=False)
 
     def getPlayCountArtist(self, pArtist : str):
