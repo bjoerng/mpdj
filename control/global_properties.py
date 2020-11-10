@@ -7,8 +7,6 @@ from model.mpd_connection import MPDConnection
 from model.mpdj_data import MPDJData
 import jsonpickle
 
-
-
 class GlobalProperties(object):
     '''
     classdocs
@@ -20,6 +18,7 @@ class GlobalProperties(object):
         if GlobalProperties.__instance == None:
             GlobalProperties()
         return GlobalProperties.__instance
+
     
     def addListener(self, pListener):
         self.updateListeners.append(pListener)

@@ -3,7 +3,7 @@ Created on 13.09.2020
 
 @author: Bjoern Graebe
 '''
-#from control.global_properties import GlobalProperties
+from model.mpd_connection import MPDConnection
 
 def isSongMatchingCriteria(pSong : dict, pCriteria : dict):
     if len(pCriteria) == 0:
@@ -11,7 +11,6 @@ def isSongMatchingCriteria(pSong : dict, pCriteria : dict):
     for key in pCriteria:
         if pSong[key] == None or pSong[key] != pCriteria[key]:
             return False
-        
     return True
     
 def filterBlackListedSongsFromSet(pInOutSongList : list, pListOfBlacklistCriterieas):
@@ -43,17 +42,16 @@ class SongSelection(object):
     def addBlackListCriterias(self, pCriteria: dict):
         self.listOfBlackListCriterias += pCriteria
         
-#     def getSongsMatchingWhitelist(self):
-#         results = []
-#         connection = GlobalProperties.getInstance().mpdConnection
-#         for criteria in self.listOfWhiteListCriterias:
-#             criteriaResults = connection.getFilesMatchingCriteria(criteria)
-#             results += criteriaResults
-#         return results
+
+    def getSongsMatchingWhitelistFromMPDConnection(self,pMPDConnection):
+        results = []
+        for criteria in self.listOfWhiteListCriterias:
+            criteriaResults = pMPDConnection.getFilesMatchingCriteria(criteria)
+            results += criteriaResults
+        return results
         
-    def getSongs(self,):
-        print('getSongs')
-        songResultList = self.getSongsMatchingWhitelist()
+    def getSongs(self,pMPDConnection):
+        songResultList = self.getSongsMatchingWhitelistFromMPDConnection(pMPDConnection)
         filterBlackListedSongsFromSet(songResultList, self.listOfBlackListCriterias)
         return songResultList
         

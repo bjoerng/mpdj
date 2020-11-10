@@ -45,11 +45,17 @@ class MPDJData(object):
                 return self.selectionConnections[pArstist1][pArtist2]
         return 0
     
+    def getNeighboursForNodeName(self, pNodeName : str):
+        result = []
+        if pNodeName in self.selectionConnections:
+            result = [ key for key in self.selectionConnections[pNodeName].keys() if self.selectionConnections[pNodeName][key] == 1]
+        return result
+    
     def setConnected(self, pArtist1, pArtist2,pIsConnected,pMarkOppositDirection=True):
         if not pArtist1 in self.selectionConnections:
             self.selectionConnections[pArtist1] = dict()
         self.selectionConnections[pArtist1][pArtist2]=pIsConnected
-        if pMarkOppositDirection and not self.chkBoxGraphIsDirected:
+        if pMarkOppositDirection and not self.graphIsDirected:
             self.setConnected(pArtist2,pArtist1,pIsConnected,pMarkOppositDirection=False)
 
     def getPlayCountArtist(self, pArtist : str):
