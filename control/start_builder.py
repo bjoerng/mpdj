@@ -8,6 +8,7 @@ Created on 12.09.2020
 from PyQt5.Qt import QApplication
 from gui.main_window import MainWindowMPDJ
 
+"""Simply start the MPDJ builder"""
 if __name__ == '__main__':
     qtApp = QApplication([])
     mw = MainWindowMPDJ()

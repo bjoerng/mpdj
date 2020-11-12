@@ -106,15 +106,16 @@ class SelectionWindow(QWidget):
         
         self.buttonBottomLayout=QHBoxLayout()
         self.buttonBottomLayout.setAlignment(Qt.AlignRight)
-        self.btCancel =QPushButton('Cancel')
+        self.btClose = QPushButton('Close')
+        self.btClose.clicked.connect(lambda: self.close())
         btAddSaveText = ''
         if self.windowMode == WindowMode.new:
             btAddSaveText = 'Add'
         elif self.windowMode == WindowMode.edit:
             btAddSaveText = 'Save'
         self.btAddSave = QPushButton(btAddSaveText)
-        self.btAddSave.clicked.connect(lambda:self.addSaveButtonClicked())
-        self.buttonBottomLayout.addWidget(self.btCancel)
+        self.btAddSave.clicked.connect(lambda: self.addSaveButtonClicked())
+        self.buttonBottomLayout.addWidget(self.btClose)
         self.buttonBottomLayout.addWidget(self.btAddSave)
         self.mainLayout.addLayout(self.buttonBottomLayout)
         
@@ -124,12 +125,13 @@ class SelectionWindow(QWidget):
         tableRowCount = pTable.rowCount()
         criteriaList = []
         for i in range(tableRowCount):
-            newCriteria = self.createSelectionCreteriaFromRowInTable(pTable, i)
-            criteriaList.append(newCriteria)
+            newCriteria = self.createSelectionCriteriaFromRowInTable(pTable, i)
+            if newCriteria:
+                criteriaList.append(newCriteria)
         return criteriaList
             
             
-    def createSelectionCreteriaFromRowInTable(self, pTable : QTableWidget ,pRow): 
+    def createSelectionCriteriaFromRowInTable(self, pTable : QTableWidget ,pRow): 
         tableColumnCount = pTable.columnCount()
         selectionCriteria = dict()
         for i in range(tableColumnCount):

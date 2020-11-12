@@ -18,6 +18,7 @@ class ConnectionTableWidget(QTableWidget):
         self.setColumnCount(selectionCount)
         self.setRowCount(selectionCount)
         songSelectionNames = gp.mpdjData.getSongSelectionNames()
+        songSelectionNames.sort()
         numberOfSelection = len(songSelectionNames)
         self.setRowCount(numberOfSelection)
         self.setColumnCount(numberOfSelection)

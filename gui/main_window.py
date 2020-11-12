@@ -11,6 +11,8 @@ from gui.connection_table import ConnectionTableWidget
 from control.global_properties import GlobalProperties
 from model.constants import FILE_SUFFIX
 from model.mpdj_data import UnitPerBodeTouch
+import sys
+
 
 class MainWindowMPDJ(QMainWindow):
     '''
@@ -33,6 +35,7 @@ class MainWindowMPDJ(QMainWindow):
         self.comboBoxMinutesOrTitles.setCurrentIndex(index)
         self.limitArtistPlayChkBox.setChecked(gp.mpdjData.limitArtistinNodeTouch)
         self.chkBoxGraphIsDirected.setChecked(gp.mpdjData.graphIsDirected)
+        self.setWindowTitle('MPDJ: {}'.format(gp.pathOfCurrentFile))
         
     
     def writeMinPerNoteToMPDJ(self):
@@ -78,11 +81,33 @@ class MainWindowMPDJ(QMainWindow):
             messageBox.exec_()
             return
         return fileNames[0]
+    
+    def newMPDJData(self):
+        gp = GlobalProperties.getInstance()
+        gp.newMPDJ()
 
+    def file_save_as(self):
+        fileName = self.file_dialog(loadSaveType = QFileDialog.AcceptSave)
+        self.saveMPDJDataToFile(fileName)
+
+
+    def saveMPDJDataToFile(self, pFileName : str):
+        try:
+            gp = GlobalProperties.getInstance()
+            gp.saveMPDJDataToFile(pFileName)
+            self.statusBar().showMessage('Saved to {}'.format(pFileName), 5000)
+        except (OSError, IOError) as e:
+            messageBox = QMessageBox()
+            messageBox.setText('Error saving the file: {}'.format(str(e)))
+            messageBox.setWindowTitle('Song selection will not be added.')
+            messageBox.setStandardButtons(QMessageBox.Ok)
+            messageBox.setIcon(QMessageBox.Warning)
+            messageBox.exec_()
+            
+        
     def file_save(self):
         gp = GlobalProperties.getInstance()
-        fileName = self.file_dialog(loadSaveType = QFileDialog.AcceptSave)
-        gp.saveMPDJDataToFile(fileName)
+        self.saveMPDJDataToFile(gp.pathOfCurrentFile)
         
     def file_load(self):
         gp = GlobalProperties.getInstance()
@@ -90,13 +115,13 @@ class MainWindowMPDJ(QMainWindow):
         gp.loadMPDJDataToFile(fileName)
         
 
+
     def __init__(self):
         '''
         Constructor
         '''
         QMainWindow.__init__(self)
         gp = GlobalProperties.getInstance()
-        self.setWindowTitle('MPDJ')
         
         self.connectionTable = ConnectionTableWidget()
         gp.addListener(self.connectionTable)
@@ -105,15 +130,20 @@ class MainWindowMPDJ(QMainWindow):
         
         self.menuBar = self.menuBar()
         self.menuFile = self.menuBar.addMenu('File')
+        self.menuFile.addAction('New',self.newMPDJData)
         self.menuFile.addAction('Open', self.file_load)
+        self.menuFile.addSeparator()
         self.menuFile.addAction('Save', self.file_save)
+        self.menuFile.addAction('Save as', self.file_save_as)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction('Exit',sys.exit)
 
         
         self.menuSelection =self.menuBar.addMenu('Selections')
         self.actionAddSelection = self.menuSelection.addAction('Add Selection')
         self.actionAddSelection.triggered.connect(self.openSelectionWindow)
         self.setMenuBar(self.menuBar)
-        self.statusBar().showMessage('Welcome to mpdj!', 2000)
+        self.statusBar().showMessage('Welcome to mpdj!', 5000)
         
         self.mpdjOptionsDock = QDockWidget("MPDJ Options Panel", self)
         self.mpdjOptionsDockLayout = QFormLayout()
