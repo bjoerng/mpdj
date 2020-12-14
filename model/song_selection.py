@@ -14,14 +14,20 @@ def isSongMatchingCriteria(pSong : dict, pCriteria : dict) -> bool :
             return False
     return True
     
-def filterBlackListedSongsFromSet(pInOutSongList : list,
+def filterBlackListedSongsFromSet(pInSongList : list,
                                   pListOfBlacklistCriterieas):
     """Filters all songs which meet a criteria in pListOfBlacklistCriterias.
-    This changes the contents of pInOutSongList."""
-    for song in pInOutSongList:
+    This changes the contents of pInSongList."""
+    filteredResults = []
+    for song in pInSongList:
+        songIsMatching = False
         for criteria in pListOfBlacklistCriterieas:
-            if isSongMatchingCriteria(song, criteria):
-                pInOutSongList.remove(song)
+            songIsMatching = songIsMatching or isSongMatchingCriteria(song, criteria)
+            if songIsMatching:
+                break
+        if not songIsMatching:
+            filteredResults.append(song)
+    return filteredResults
 
 class SongSelection(object):
     '''
@@ -67,11 +73,8 @@ class SongSelection(object):
         filtern out those songs matched by one blacklist criteria."""
         songResultList = self.getSongsMatchingWhitelistFromMPDConnection(
             pMPDConnection)
-        print('sonResultList: {}'.format(str(songResultList)))
-        filterBlackListedSongsFromSet(songResultList, self.listOfBlackListCriterias)
-        print('sonResultList: {}'.format(str(songResultList)))
+        songResultList = filterBlackListedSongsFromSet(songResultList, self.listOfBlackListCriterias)
         return songResultList
-        
         
     def __str__(self) -> str:
         """ Returns the string representation of a song selection."""

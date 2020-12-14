@@ -40,6 +40,7 @@ class MPDConnection(object):
         self.mpdClient.add(pSongName)
         
     def clear(self):
+        self.ensureWorkingConnection()
         self.mpdClient.clear()
     
     def getPossibleValueForTag(self, tag):

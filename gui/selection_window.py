@@ -36,7 +36,6 @@ def fillCriteriaTableWithData(pTable : QTableWidget, pCriteriaList):
                     pTable.setItem(row,i,QTableWidgetItem())
                 pTable.item(row,i).setText(criteria[header])
         row += 1
-    print ( GlobalProperties.getInstance().mpdjData.songSelections )
 
 class SelectionWindow(QWidget):
     '''
@@ -53,7 +52,10 @@ class SelectionWindow(QWidget):
         self.possibleTags = list(map(lambda tagType: tagType.lower(),
                                      GlobalProperties.getInstance().mpdConnection.getPossibleTags()))
         self.window = QWidget()
-        self.window.setWindowTitle('Create selection')
+        if pMode == WindowMode.new:
+            self.window.setWindowTitle('Create selection')
+        else:
+            self.window.setWindowTitle('Change selection')
         self.mainLayout = QVBoxLayout()
         
         self.inputNameLayout = QHBoxLayout()
@@ -195,3 +197,6 @@ class SelectionWindow(QWidget):
         #self.window.show()
         self.window.showMaximized()
         
+    def close(self):
+        print ("Closing")
+        print (super().close())

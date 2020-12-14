@@ -47,7 +47,7 @@ class MPDJData(object):
     
     def getNeighboursForNodeName(self, pNodeName : str):
         result = []
-        if pNodeName in self.selectionConnections:
+        if pNodeName in self.selectionConnections.keys():
             result = [ key for key in self.selectionConnections[pNodeName].keys() if self.selectionConnections[pNodeName][key] == 1]
         return result
     

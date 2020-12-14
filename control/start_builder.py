@@ -5,7 +5,7 @@ Created on 12.09.2020
 @author: Bjoern Graebe
 '''
 
-from PyQt5.Qt import QApplication
+from PyQt5.QtWidgets import QApplication
 from gui.main_window import MainWindowMPDJ
 
 """Simply start the MPDJ builder"""

@@ -6,6 +6,8 @@ Created on 20.09.2020
 from model.mpd_connection import MPDConnection
 from model.mpdj_data import MPDJData
 import jsonpickle
+import configparser
+import os
 
 
 class GlobalProperties(object):
@@ -26,6 +28,10 @@ class GlobalProperties(object):
         informed."""
         self.updateListeners.append(pListener)
         
+        
+    def loadConfigFromFile(self):
+        pass
+        
     def informUpdateListener(self):
         """This method inform all added listeners about changes."""
         for updateListener in self.updateListeners:
@@ -39,12 +45,10 @@ class GlobalProperties(object):
         self.changesHappenedSinceLastSave = False
         self.pathOfCurrentFile = pFileName
         self.informUpdateListener()
-
     
     def loadMPDJDataToFile(self, pFileName):
         """ Loads a mpdj file, overwrite the momentary MPDJ-data. """
-# TODO Error handling!
-# TODO Asking if the file should replace the momentary MPDJ-data!
+        # TODO Asking if the file should replace the momentary MPDJ-data!
         with open(pFileName, 'r') as loadFile:
             self.mpdjData = jsonpickle.decode(loadFile.read())
         self.informUpdateListener()
@@ -63,14 +67,17 @@ class GlobalProperties(object):
         if GlobalProperties.__instance != None:
             raise Exception("This class is a singleton!")
         else:
-            GlobalProperties.__instance = self
-            # The momentary connection we are using.
-            self.mpdConnection = MPDConnection('localhost', '6600')
-            self.mpdConnection.connect()
-            # The momentary MPDJ data.
-            self.mpdjData = MPDJData()
-            # The update listeners which are informed about changes.
-            self.updateListeners = []
-            # The path of the file which we are working on
-            self.pathOfCurrentFile = ''
-            self.changesHappenedSinceLastSave = False
+            if os.path.isfile('./path_of_file'):
+                self.loadConfigFromFile()
+            else:   
+                GlobalProperties.__instance = self
+                # The momentary connection we are using.
+                self.mpdConnection = MPDConnection('localhost', '6600')
+                self.mpdConnection.connect()
+                # The momentary MPDJ data.
+                self.mpdjData = MPDJData()
+                # The update listeners which are informed about changes.
+                self.updateListeners = []
+                # The path of the file which we are working on
+                self.pathOfCurrentFile = ''
+                self.changesHappenedSinceLastSave = False
