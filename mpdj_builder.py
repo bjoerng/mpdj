@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 '''
 Created on 12.09.2020
@@ -8,8 +9,9 @@ Created on 12.09.2020
 from PyQt5.QtWidgets import QApplication
 from gui.main_window import MainWindowMPDJ
 
-"""Simply start the MPDJ builder"""
+
 if __name__ == '__main__':
+    # Simply start the MPDJ builder
     qtApp = QApplication([])
     mw = MainWindowMPDJ()
     mw.show()

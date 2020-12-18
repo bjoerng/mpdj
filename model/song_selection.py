@@ -5,89 +5,85 @@ Created on 13.09.2020
 '''
 from model.mpd_connection import MPDConnection
 
-def isSongMatchingCriteria(pSong : dict, pCriteria : dict) -> bool :
-    """Indicates if pSong is matched by pCriteria"""
-    if len(pCriteria) == 0:
+def is_song_matching_criteria(p_song : dict, p_criteria : dict) -> bool :
+    """Indicates if p_song is matched by p_criteria"""
+    if len(p_criteria) == 0:
         return False
-    for key in pCriteria:
-        if pSong[key] == None or pSong[key] != pCriteria[key]:
+    for key in p_criteria:
+        if p_song[key] is None or p_song[key] != p_criteria[key]:
             return False
     return True
-    
-def filterBlackListedSongsFromSet(pInSongList : list,
-                                  pListOfBlacklistCriterieas):
+
+def filter_black_listed_songs_from_set(p_in_song_list : list, p_list_of_blacklist_criterieas):
     """Filters all songs which meet a criteria in pListOfBlacklistCriterias.
-    This changes the contents of pInSongList."""
-    filteredResults = []
-    for song in pInSongList:
-        songIsMatching = False
-        for criteria in pListOfBlacklistCriterieas:
-            songIsMatching = songIsMatching or isSongMatchingCriteria(song, criteria)
-            if songIsMatching:
+    This changes the contents of p_in_song_list."""
+    filtered_results = []
+    for song in p_in_song_list:
+        song_is_matching = False
+        for criteria in p_list_of_blacklist_criterieas:
+            song_is_matching = song_is_matching or is_song_matching_criteria(song, criteria)
+            if song_is_matching:
                 break
-        if not songIsMatching:
-            filteredResults.append(song)
-    return filteredResults
+        if not song_is_matching:
+            filtered_results.append(song)
+    return filtered_results
 
-class SongSelection(object):
-    '''
-    This class represents a song selection, this means it contains a
+class SongSelection():
+    """This class represents a song selection, this means it contains a
     whitelist and a blacklist of criterias and is able to get matcvhing
-    songs from a mpd connection.
-    '''
+    songs from a mpd connection."""
+    def __init__(self, p_name):
+        self.list_of_white_list_criterias = []
+        self.list_of_black_list_criterias = []
+        self.name = p_name
 
-    def __init__(self, pName):
-        self.listOfWhiteListCriterias = []
-        self.listOfBlackListCriterias = []
-        self.name = pName
-        
-    def setWhiteListCriterias(self, pWhiteListCriterias : list):
-        """Set the whitelist criterias to pWhiteListCriterias."""
-        self.listOfWhiteListCriterias = pWhiteListCriterias
-        
-    def addWhiteListCriteria(self, pCriteria: dict):
+    def set_white_list_criterias(self, p_white_list_criterias : list):
+        """Set the whitelist criterias to p_white_list_criterias."""
+        self.list_of_white_list_criterias = p_white_list_criterias
+
+    def add_white_list_criteria(self, p_criteria: dict):
         """Add a new white list criteria to the existing list."""
-        self.listOfWhiteListCriterias += pCriteria
-        
-    def setBlackListCriterias(self, pBlackListCriterias : list):
-        """Add a new whtie list criteria to the existing list."""
-        self.listOfBlackListCriterias = pBlackListCriterias
-        
-    def addBlackListCriterias(self, pCriteria: dict):
-        """Add a new black list criteria to the existing list."""
-        self.listOfBlackListCriterias += pCriteria
-        
+        self.list_of_white_list_criterias += p_criteria
 
-    def getSongsMatchingWhitelistFromMPDConnection(
-            self,pMPDConnection : MPDConnection) -> list:
+    def set_black_list_criterias(self, p_black_list_criterias : list):
+        """Add a new whtie list criteria to the existing list."""
+        self.list_of_black_list_criterias = p_black_list_criterias
+
+    def add_black_list_criterias(self, p_criteria: dict):
+        """Add a new black list criteria to the existing list."""
+        self.list_of_black_list_criterias += p_criteria
+
+    def get_songs_matching_whitelist_from_mpdconnection(
+            self,p_mpd_connection : MPDConnection) -> list:
         """Retrieves the songs matching on the the white list criterias in
-        self.listOfWhiteListCriterias."""
+        self.list_of_white_list_criterias."""
         results = []
-        for criteria in self.listOfWhiteListCriterias:
-            criteriaResults = pMPDConnection.getFilesMatchingCriteria(criteria)
-            results += criteriaResults
+        for criteria in self.list_of_white_list_criterias:
+            criteria_results = p_mpd_connection.get_files_matching_criteria(criteria)
+            results += criteria_results
         return results
-        
-    def getSongs(self,pMPDConnection) -> list():
+
+    def get_songs(self,p_mpdconnection) -> list():
         """Retrieves the songs which match on of the whitelist criterias,
         filtern out those songs matched by one blacklist criteria."""
-        songResultList = self.getSongsMatchingWhitelistFromMPDConnection(
-            pMPDConnection)
-        songResultList = filterBlackListedSongsFromSet(songResultList, self.listOfBlackListCriterias)
-        return songResultList
-        
+        song_result_list = self.get_songs_matching_whitelist_from_mpdconnection(
+            p_mpdconnection)
+        song_result_list = filter_black_listed_songs_from_set(
+            song_result_list, self.list_of_black_list_criterias)
+        return song_result_list
+
     def __str__(self) -> str:
         """ Returns the string representation of a song selection."""
-        return self.name.__str__() + '\n' + 'Whiteliste:\n'
-        + self.listOfWhiteListCriterias.__str__() + '\nBlacklist:\n'
-        + self.listOfBlackListCriterias.__str__()
-    
-    def getName(self):
+        return self.name.__str__() + '\n' + 'Whiteliste:\n'\
+            + self.list_of_white_list_criterias.__str__()\
+            + '\nBlacklist:\n' + self.list_of_black_list_criterias.__str__()
+
+    def get_name(self):
         """Returns the name of the song selection."""
         return self.name
-    
+
     def __repr__(self):
         """ Returns a string representation of an object of this type."""
-        return "Name: " + self.name + ", WhiteList: "
-        + self.listOfWhiteListCriterias.__repr__() + ", BlackList: "
-        + self.listOfBlackListCriterias.__repr__()
+        return "Name: " + self.name + ", WhiteList: "\
+            + self.list_of_white_list_criterias.__repr__()\
+            + ", BlackList: " + self.list_of_black_list_criterias.__repr__()
