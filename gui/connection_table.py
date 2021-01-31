@@ -6,7 +6,7 @@ Created on 11.10.2020
 from PyQt5.Qt import QTableWidget, QComboBox, QMenu, QLabel
 from PyQt5.QtCore import Qt
 from control.global_properties import GlobalProperties
-from gui.selection_window import SelectionWindow,WindowMode
+from gui.selection_window import SelectionWindow,WindowMode,open_selection_window
 
 
 class ConnectionTableWidget(QTableWidget):
@@ -17,15 +17,15 @@ class ConnectionTableWidget(QTableWidget):
         """Updates the view of with the current connection status of the model."""
         global_properties = GlobalProperties.get_instance()
         selection_count = len(global_properties.mpdj_data.song_selections)
-        self.set_column_count(selection_count + 1)
-        self.set_row_count(selection_count + 1)
+        self.setColumnCount(selection_count + 1)
+        self.setRowCount(selection_count + 1)
         header_names = global_properties.mpdj_data.get_song_selection_names()
         header_names.sort()
         header_names.append('neighbours')
-        self.set_row_count(len(header_names))
-        self.set_column_count(len(header_names))
-        self.set_horizontal_header_labels(header_names)
-        self.set_vertical_header_labels(header_names)
+        self.setRowCount(len(header_names))
+        self.setColumnCount(len(header_names))
+        self.setHorizontalHeaderLabels(header_names)
+        self.setVerticalHeaderLabels(header_names)
         self.initiate_combo_boxes()
         self.update_neighbour_count()
 
@@ -38,8 +38,8 @@ class ConnectionTableWidget(QTableWidget):
         global_properrties = GlobalProperties.get_instance()
         for column in range(0,column_count - 1):
             for row in range(0,row_count - 1):
-                row_heading = self.horizontal_header_item(row).text()
-                column_heading = self.vertical_header_item(column).text()
+                row_heading = self.horizontalHeaderItem(row).text()
+                column_heading = self.verticalHeaderItem(column).text()
                 is_connected = global_properrties.mpdj_data.is_connected(row_heading,column_heading)
                 new_combo_box = QComboBox()
                 new_combo_box.addItems(['0','1'])
@@ -61,10 +61,13 @@ class ConnectionTableWidget(QTableWidget):
         row = combo_box.property('row')
         column = combo_box.property('column')
         artist_connection_value = int(combo_box.currentText())
-        artist_row = self.horizontal_header_item(column).text()
-        artist_column = self.vertical_header_item(row).text()
+        artist_row = self.horizontalHeaderItem(column).text()
+        artist_column = self.verticalHeaderItem(row).text()
         global_properties = GlobalProperties.get_instance()
-        global_properties.mpdj_data.set_connected(artist_column,artist_row,artist_connection_value)
+        mark_opposit_direction = not global_properties.mpdj_data.graph_is_directed
+        global_properties.mpdj_data.set_connected(artist_column,artist_row,
+                                                  artist_connection_value,
+                                                  mark_opposit_direction)
         global_properties.inform_update_listener()
 
     def update_neighbour_count_row(self):
@@ -77,7 +80,7 @@ class ConnectionTableWidget(QTableWidget):
                 neighbour_count += int(self.cellWidget(column,row).currentText())
             if not isinstance(self.cellWidget(column, row_count), QLabel):
                 self.setCellWidget(column, row_count - 1, QLabel())
-            self.cellWidget(column, columnCount - 1).setText(str(neighbour_count))
+            self.cellWidget(column, column_count - 1).setText(str(neighbour_count))
 
     def update_neighbour_count_column(self):
         """The method updates the neighbour count for each column"""
@@ -106,16 +109,15 @@ class ConnectionTableWidget(QTableWidget):
         logical_index_y = self.vertical_headers.logicalIndexAt(position.y())
         name_of_selection = ''
         if logical_index_x > logical_index_y:
-            name_of_selection = self.vertical_header_item(logical_index_x).text()
+            name_of_selection = self.verticalHeaderItem(logical_index_x).text()
         else:
-            name_of_selection = self.horizontal_header_item(logical_index_y).text()
+            name_of_selection = self.horizontalHeaderItem(logical_index_y).text()
         global_properties = GlobalProperties.get_instance()
         if action == remove_selection:
             global_properties.mpdj_data.remove_song_selection_by_name(name_of_selection)
             global_properties.inform_update_listener()
         if action == change_selection:
-            selection_window = SelectionWindow(name_of_selection, WindowMode.edit)
-            selection_window.show()
+            open_selection_window(WindowMode.edit, name_of_selection)
 
     def __init__(self):
         """Constructor"""

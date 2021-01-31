@@ -7,6 +7,7 @@ import os
 import jsonpickle
 from model.mpd_connection import MPDConnection
 from model.mpdj_data import MPDJData
+from pickle import TRUE
 
 def new_mpdj_data():
     """Discard the mpdj data and create a new on."""
@@ -38,6 +39,7 @@ class GlobalProperties():
         """This method inform all added listeners about changes."""
         for update_listener in self.update_listeners:
             update_listener.update()
+        self.changes_happened_since_last_save = True
 
     def save_mpdj_data_to_file(self, p_file_name):
         """Write the momentary MPDJ-data to p_file_name."""
@@ -65,6 +67,8 @@ class GlobalProperties():
         self.changes_happened_since_last_save = False
         self.inform_update_listener()
 
+
+
     def __init__(self):
         """ Virtually private constructor. """
         if GlobalProperties.__instance is not None:
@@ -85,4 +89,7 @@ class GlobalProperties():
             # Indicates changes since the last save or load operation.
             self.changes_happened_since_last_save = False
             # Edit connections so the graph the graph simulates an undirected graph
-            self.edit_both_directions = True
+#            self.edit_both_directions = True
+            # The current opened windows.
+            self.opened_windows = list()
+

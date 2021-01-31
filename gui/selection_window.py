@@ -12,11 +12,19 @@ from control.global_properties import GlobalProperties
 
 PLUSBUTTONWITH = 50
 
+
+
 class WindowMode(Enum):
     """This Enum represents the Mode of the selection window.
         New and edit are supported by now."""
     new = 1
     edit = 2
+
+def open_selection_window(p_mode=WindowMode.new, p_selection_name=''):
+    """Creates and display a window to create or modify a selection."""
+    opened_selection_window = SelectionWindow(p_selection_name, p_mode)
+    GlobalProperties.get_instance().opened_windows.append(opened_selection_window)
+    opened_selection_window.show()
 
 def add_empty_row_to_table(p_in_out_table : QTableWidget):
     """Adds an empty row to the table given in p_in_out_table"""
@@ -25,18 +33,18 @@ def add_empty_row_to_table(p_in_out_table : QTableWidget):
 
 def clear_table(p_in_out_table : QTableWidget):
     """Clears the given table."""
-    p_in_out_table.set_row_count(0)
-    p_in_out_table.set_row_count(1)
+    p_in_out_table.setRowCount(0)
+    p_in_out_table.setRowCount(1)
 
 def fill_criteria_table_with_data(p_table : QTableWidget, p_criteria_list):
     """Fills the given table in p_table with the criterias given
         in p_criteria_list."""
     criteria_count = len(p_criteria_list)
-    p_table.set_row_count(criteria_count)
+    p_table.setRowCount(criteria_count)
     row = 0
     for criteria in p_criteria_list:
         for i in range(0,p_table.columnCount()):
-            header = p_table.horizontal_header_item(i).text()
+            header = p_table.horizontalHeaderItem(i).text()
             if header in criteria:
                 if p_table.item(row,i) is None:
                     p_table.setItem(row,i,QTableWidgetItem())
@@ -51,7 +59,7 @@ def create_selection_criteria_from_row_in_table(p_table : QTableWidget ,p_row):
     for i in range(table_column_count):
         tag_value_item = p_table.item(p_row, i)
         if tag_value_item and tag_value_item.text() != '':
-            tag_type = p_table.horizontal_header_item(i).text().lower()
+            tag_type = p_table.horizontalHeaderItem(i).text().lower()
             # TODO Fehlerfall, leere Überschrift abfangen
             selection_criteria[tag_type] = tag_value_item.text()
     return selection_criteria
@@ -69,9 +77,9 @@ def create_selection_from_table( p_table : QTableWidget):
 
 def prepare_table_from_tags(p_table : QTableWidget, p_tags):
     """Prepares the p_table with the tags given by p_tags."""
-    p_table.set_row_count(1)
-    p_table.set_column_count(len(p_tags))
-    p_table.set_horizontal_header_labels(p_tags)
+    p_table.setRowCount(1)
+    p_table.setColumnCount(len(p_tags))
+    p_table.setHorizontalHeaderLabels(p_tags)
 
 class SelectionWindow(QWidget):
     """Displays a window to create a selection of music-title."""
@@ -104,7 +112,7 @@ class SelectionWindow(QWidget):
         self.label_white_list_criterias.setText('White list criterias:')
         self.main_layout.addWidget(self.label_white_list_criterias)
         self.selection_white_list_table = QTableWidget()
-        self.prepare_table_from_tags(self.selection_white_list_table, self.possible_tags)
+        prepare_table_from_tags(self.selection_white_list_table, self.possible_tags)
         self.main_layout.addWidget(self.selection_white_list_table)
 
         self.bt_add_line_to_white_list_table_layout = QHBoxLayout()
@@ -115,17 +123,17 @@ class SelectionWindow(QWidget):
         self.bt_del_line_white_list_table.setMaximumWidth(PLUSBUTTONWITH)
         self.bt_add_line_to_white_list_table_layout.addWidget(self.bt_del_line_white_list_table)
 
-        self.bt_add_line_to_whitef_list_table = QPushButton('\N{heavy plus sign}')
-        self.btAddLineToWhiteListTable.clicked.connect(self.add_row_to_white_list_table)
-        self.btAddLineToWhiteListTable.setMaximumWidth(PLUSBUTTONWITH)
-        self.bt_add_line_to_white_list_table_layout.addWidget(self.btAddLineToWhiteListTable)
+        self.bt_add_line_to_white_list_table = QPushButton('\N{heavy plus sign}')
+        self.bt_add_line_to_white_list_table.clicked.connect(self.add_row_to_white_list_table)
+        self.bt_add_line_to_white_list_table.setMaximumWidth(PLUSBUTTONWITH)
+        self.bt_add_line_to_white_list_table_layout.addWidget(self.bt_add_line_to_white_list_table)
         self.main_layout.addLayout(self.bt_add_line_to_white_list_table_layout)
 
         self.label_black_list_criterias = QLabel()
         self.label_black_list_criterias.setText('Black list criterias:')
         self.main_layout.addWidget(self.label_black_list_criterias)
         self.selection_black_list_table = QTableWidget()
-        self.prepare_table_from_tags(self.selection_black_list_table, self.possible_tags)
+        prepare_table_from_tags(self.selection_black_list_table, self.possible_tags)
         self.main_layout.addWidget(self.selection_black_list_table)
 
         if self.window_mode == WindowMode.edit:
@@ -175,9 +183,9 @@ class SelectionWindow(QWidget):
                 message_box.exec_()
                 return
         song_selection = SongSelection(selection_name)
-        white_list_criterias = self.create_selection_from_table(self.selection_white_list_table)
+        white_list_criterias = create_selection_from_table(self.selection_white_list_table)
         song_selection.set_white_list_criterias(white_list_criterias)
-        black_list_criterias = self.create_selection_from_table(self.selection_black_list_table)
+        black_list_criterias = create_selection_from_table(self.selection_black_list_table)
         song_selection.set_black_list_criterias(black_list_criterias)
 
         if self.window_mode == WindowMode.new:
@@ -210,7 +218,7 @@ class SelectionWindow(QWidget):
         fill_criteria_table_with_data(self.selection_white_list_table,white_list_criterias)
         fill_criteria_table_with_data(self.selection_black_list_table, black_list_criterias)
 
-    def show(self):
-        """Shows the window maximized."""
-        #self.window.show()
-        self.showMaximized()
+    def closeEvent(self, *args, **kwargs):
+        global_properties = GlobalProperties.get_instance()
+        global_properties.opened_windows.remove(self)
+        print(len(global_properties.opened_windows))

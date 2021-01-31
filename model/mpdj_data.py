@@ -6,7 +6,7 @@ Created on 20.09.2020
 from enum import Enum
 from model.song_selection import SongSelection
 
-class UnitPerBodeTouch(Enum):
+class UnitPerNodeTouch(Enum):
     """Provides the mechanism to select the limit type of songs per node."""
     MINUTES = 1
     SONGS = 2
@@ -23,10 +23,11 @@ class MPDJData():
         self.song_selections = dict()
         self.min_units_per_node_touch = 1
         self.max_units_per_node_touch = 5
-        self.unit_per_node_touch = UnitPerBodeTouch.MINUTES
+        self.unit_per_node_touch = UnitPerNodeTouch.MINUTES
         self.played_artists = dict()
         self.selection_connections = dict()
-        self.limit_artists_in_node_touch = False
+        self.limit_artist_in_node_touch = True
+        self.graph_is_directed = True
 
     def is_connected(self, p_selection_1, p_selection_2):
         """Returns 1 if p_selection_1 has an edge to p_selection_2."""
