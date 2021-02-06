@@ -75,12 +75,12 @@ class SongSelection():
         print('Songs got from mpd: {}'.format(len(song_result_list)))
         if self.min_duration != 0:
             tmp_result_list = [song for song in song_result_list
-                               if song['time'] >= self.min_duration]
+                               if int(song['time']) >= self.min_duration]
             song_result_list = tmp_result_list
         print('Filtered by minimum: {}'.format(len(song_result_list)))
         if self.max_duration != 0:
             tmp_result_list = [ song for song in song_result_list
-                               if song['time'] <= self.max_duration]
+                               if int(song['time']) <= self.max_duration]
             song_result_list = tmp_result_list
         print('Filtered by maximum: {}'.format(len(song_result_list)))
         song_result_list = filter_black_listed_songs_from_set(

@@ -50,7 +50,6 @@ class GlobalProperties():
 
     def load_mpdjdata_from_file(self, p_file_name):
         """Loads a mpdj file, overwrite the momentary MPDJ-data."""
-        #TODO Asking if the file should replace the momentary MPDJ-data!
         with open(p_file_name, 'r') as load_file:
             self.mpdj_data = jsonpickle.decode(load_file.read())
         self.inform_update_listener()

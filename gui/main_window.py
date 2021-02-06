@@ -150,7 +150,7 @@ class MainWindowMPDJ(QMainWindow):
         global_properties = GlobalProperties.get_instance()
         file_name = self.file_dialog(load_save_type = QFileDialog.AcceptOpen)
         if global_properties.changes_happened_since_last_save:
-            retval = show_discard_data_ok_cancel_message
+            retval = show_discard_data_ok_cancel_message()
         if not global_properties.changes_happened_since_last_save or retval == QMessageBox.Ok:
             try:
                 global_properties.load_mpdjdata_from_file(file_name)
