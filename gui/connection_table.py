@@ -6,7 +6,7 @@ Created on 11.10.2020
 from PyQt5.Qt import QTableWidget, QComboBox, QMenu, QLabel
 from PyQt5.QtCore import Qt
 from control.global_properties import GlobalProperties
-from gui.selection_window import SelectionWindow,WindowMode,open_selection_window
+from gui.selection_window import WindowMode,open_selection_window
 
 
 class ConnectionTableWidget(QTableWidget):

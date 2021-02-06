@@ -5,7 +5,7 @@ Created on 10.10.2020
 '''
 import sys
 from PyQt5.Qt import QMainWindow, QFileDialog, QMessageBox, QDockWidget,\
-    QCheckBox,QFormLayout,QLabel,QWidget, QLineEdit,QIntValidator, QComboBox
+    QCheckBox,QFormLayout,QLabel,QWidget, QLineEdit, QIntValidator, QComboBox
 from PyQt5.QtCore import Qt
 
 from gui.connection_table import ConnectionTableWidget
@@ -191,12 +191,12 @@ class MainWindowMPDJ(QMainWindow):
         self.mpdj_docked_widget = QWidget()
 
         self.tf_min_per_selection = QLineEdit()
-        self.tf_min_per_selection.setValidator(QIntValidator())
+        self.tf_min_per_selection.setValidator(QIntValidator(0,2147483647))
         self.mpdj_options_dock_layout.addRow('Min per Node touch:', self.tf_min_per_selection)
         self.tf_min_per_selection.editingFinished.connect(self.write_min_per_note_to_mpdj)
 
         self.tf_max_per_selection = QLineEdit()
-        self.tf_max_per_selection.setValidator(QIntValidator())
+        self.tf_max_per_selection.setValidator(QIntValidator(0,2147483647))
         self.mpdj_options_dock_layout.addRow('Max per Node touch:', self.tf_max_per_selection)
         self.tf_max_per_selection.editingFinished.connect(self.write_max_per_note_to_mpdj)
 
@@ -210,11 +210,6 @@ class MainWindowMPDJ(QMainWindow):
         self.mpdj_docked_widget.setLayout(self.mpdj_options_dock_layout)
         self.mpdj_options_dock.setWidget(self.mpdj_docked_widget)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.mpdj_options_dock)
-
-#         self.limit_artist_play_chk_box = QCheckBox()
-#         self.limit_artist_play_chk_box.stateChanged.connect(self.write_limit_artists_played_to_mpdj)
-#         self.mpdj_options_dock_layout.addRow(
-#             QLabel('Artist only once per node crossing'), self.limit_artist_play_chk_box)
 
         self.chk_box_graph_is_directed = QCheckBox()
         self.chk_box_graph_is_directed.stateChanged.connect(self.write_graph_is_directed_to_mpdj)

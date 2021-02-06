@@ -7,7 +7,6 @@ import os
 import jsonpickle
 from model.mpd_connection import MPDConnection
 from model.mpdj_data import MPDJData
-from pickle import TRUE
 
 def new_mpdj_data():
     """Discard the mpdj data and create a new on."""
@@ -67,8 +66,6 @@ class GlobalProperties():
         self.changes_happened_since_last_save = False
         self.inform_update_listener()
 
-
-
     def __init__(self):
         """ Virtually private constructor. """
         if GlobalProperties.__instance is not None:
@@ -92,4 +89,3 @@ class GlobalProperties():
 #            self.edit_both_directions = True
             # The current opened windows.
             self.opened_windows = list()
-

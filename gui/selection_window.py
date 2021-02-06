@@ -6,7 +6,7 @@ Created on 12.09.2020
 '''
 from enum import Enum
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QPushButton, QLabel,QMessageBox
-from PyQt5.Qt import QLineEdit, QHBoxLayout, Qt, QTableWidgetItem
+from PyQt5.Qt import QLineEdit, QHBoxLayout, Qt, QTableWidgetItem, QFormLayout, QIntValidator
 from model.song_selection import SongSelection
 from control.global_properties import GlobalProperties
 
@@ -108,6 +108,20 @@ class SelectionWindow(QWidget):
         self.input_name_layout.addWidget(self.tf_selection_name)
         self.main_layout.addLayout(self.input_name_layout)
 
+        self.duration_heading_layout = QHBoxLayout()
+        self.label_duration_display = QLabel()
+        self.label_duration_display.setText('Duration (in seconds) 0 means no limit:')
+        self.main_layout.addWidget(self.label_duration_display, 0, Qt.AlignLeft)
+        self.label_duration_display.setAlignment(Qt.AlignRight)
+        self.duration_layout_min_max = QFormLayout()
+        self.tf_duration_min = QLineEdit()
+        self.tf_duration_min.setValidator(QIntValidator(0,2147483647))
+        self.duration_layout_min_max.addRow('min:', self.tf_duration_min)
+        self.tf_duration_max = QLineEdit()
+        self.tf_duration_min.setValidator(QIntValidator(0,2147483647))
+        self.duration_layout_min_max.addRow('max:', self.tf_duration_max)
+        self.main_layout.addLayout(self.duration_layout_min_max)
+
         self.label_white_list_criterias = QLabel()
         self.label_white_list_criterias.setText('White list criterias:')
         self.main_layout.addWidget(self.label_white_list_criterias)
@@ -118,10 +132,10 @@ class SelectionWindow(QWidget):
         self.bt_add_line_to_white_list_table_layout = QHBoxLayout()
         self.bt_add_line_to_white_list_table_layout.setAlignment(Qt.AlignRight)
 
-        self.bt_del_line_white_list_table = QPushButton('\N{heavy minus sign}')
-        self.bt_del_line_white_list_table.clicked.connect(self.add_row_to_white_list_table)
-        self.bt_del_line_white_list_table.setMaximumWidth(PLUSBUTTONWITH)
-        self.bt_add_line_to_white_list_table_layout.addWidget(self.bt_del_line_white_list_table)
+#         self.bt_del_line_white_list_table = QPushButton('\N{heavy minus sign}')
+#         self.bt_del_line_white_list_table.clicked.connect(self.add_row_to_white_list_table)
+#         self.bt_del_line_white_list_table.setMaximumWidth(PLUSBUTTONWITH)
+#         self.bt_add_line_to_white_list_table_layout.addWidget(self.bt_del_line_white_list_table)
 
         self.bt_add_line_to_white_list_table = QPushButton('\N{heavy plus sign}')
         self.bt_add_line_to_white_list_table.clicked.connect(self.add_row_to_white_list_table)
@@ -161,7 +175,6 @@ class SelectionWindow(QWidget):
         self.button_bottom_layout.addWidget(self.bt_close)
         self.button_bottom_layout.addWidget(self.bt_add_save)
         self.main_layout.addLayout(self.button_bottom_layout)
-
         self.setLayout(self.main_layout)
 
     def add_save_button_clicked(self):
@@ -183,6 +196,15 @@ class SelectionWindow(QWidget):
                 message_box.exec_()
                 return
         song_selection = SongSelection(selection_name)
+        if self.tf_duration_min.text() == '':
+            song_selection.min_duration = 0
+        else:
+            song_selection.min_duration = int(self.tf_duration_min.text())
+        if self.tf_duration_max.text() == '':
+            song_selection.max_duration = 0
+        else:
+            song_selection.max_duration = int(self.tf_duration_max.text())
+
         white_list_criterias = create_selection_from_table(self.selection_white_list_table)
         song_selection.set_white_list_criterias(white_list_criterias)
         black_list_criterias = create_selection_from_table(self.selection_black_list_table)
@@ -217,8 +239,16 @@ class SelectionWindow(QWidget):
         black_list_criterias = song_selection.list_of_black_list_criterias
         fill_criteria_table_with_data(self.selection_white_list_table,white_list_criterias)
         fill_criteria_table_with_data(self.selection_black_list_table, black_list_criterias)
+        if hasattr(song_selection, 'min_duration'):
+            self.tf_duration_min.setText(str(song_selection.min_duration))
+        else:
+            self.tf_duration_min.setText('0')
+        if hasattr(song_selection, 'max_duration'):
+            self.tf_duration_max.setText(str(song_selection.max_duration))
+        else:
+            self.tf_duration_max.setText('0')
 
     def closeEvent(self, *args, **kwargs):
+        """Will be executed, when window is closed."""
         global_properties = GlobalProperties.get_instance()
         global_properties.opened_windows.remove(self)
-        print(len(global_properties.opened_windows))
