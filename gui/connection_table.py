@@ -8,7 +8,6 @@ from PyQt5.QtCore import Qt
 from control.global_properties import GlobalProperties
 from gui.selection_window import WindowMode,open_selection_window
 
-
 class ConnectionTableWidget(QTableWidget):
     '''
     classdocs

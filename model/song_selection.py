@@ -72,20 +72,20 @@ class SongSelection():
         those who are to long or to short."""
         song_result_list = self.get_songs_matching_whitelist_from_mpdconnection(
             p_mpdconnection)
-        print('Songs got from mpd: {}'.format(len(song_result_list)))
+        #print('Songs got from mpd: {}'.format(len(song_result_list)))
         if self.min_duration != 0:
             tmp_result_list = [song for song in song_result_list
                                if int(song['time']) >= self.min_duration]
             song_result_list = tmp_result_list
-        print('Filtered by minimum: {}'.format(len(song_result_list)))
+        #print('Filtered by minimum: {}'.format(len(song_result_list)))
         if self.max_duration != 0:
             tmp_result_list = [ song for song in song_result_list
                                if int(song['time']) <= self.max_duration]
             song_result_list = tmp_result_list
-        print('Filtered by maximum: {}'.format(len(song_result_list)))
+        #print('Filtered by maximum: {}'.format(len(song_result_list)))
         song_result_list = filter_black_listed_songs_from_set(
             song_result_list, self.list_of_black_list_criterias)
-        print('Filtered by blacklist: {}'.format(len(song_result_list)))
+        #print('Filtered by blacklist: {}'.format(len(song_result_list)))
         return song_result_list
 
     def __str__(self) -> str:

@@ -36,7 +36,7 @@ def song_is_equal_in_value_to_song(p_song_1 : dict, p_song_2 : dict,
     return False
 
 def get_song_duration_value(song : dict, p_song_accounting_value=UnitPerNodeTouch.SONGS):
-    """Return the duration value of song, dependend on p_song_accounting_value."""
+    """Return the duration value of song, dependent on p_song_accounting_value."""
     if p_song_accounting_value == UnitPerNodeTouch.MINUTES:
         return float(song['duration']) / 60.0
     return 1
@@ -48,7 +48,7 @@ class SongSelectorMinimalPlayCount():
                     p_mpd_connection : MPDConnection, p_play_data : PlayData,
                     p_dup_attr_fltr_lst : list, p_song_account_walue=UnitPerNodeTouch.SONGS):
         """Returns p_song_count if there are enough different songs
-            availible. If there are less songs availible, this could
+            available. If there are less songs available, this could
             return less than p_song_count. The other parameters of this
             method evaluated to generate a song selection."""
         random.seed()
@@ -91,3 +91,4 @@ class SongSelectorMinimalPlayCount():
     def __init__(self):
         """Constructor"""
         self.song_block_list = defaultdict(lambda: defaultdict(lambda: 0))
+

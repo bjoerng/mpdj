@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QPushButton, QLa
 from PyQt5.Qt import QLineEdit, QHBoxLayout, Qt, QTableWidgetItem, QFormLayout, QIntValidator
 from model.song_selection import SongSelection
 from control.global_properties import GlobalProperties
+from gui.criterias_table import CriteriaTable
 
 PLUSBUTTONWITH = 50
 
@@ -125,7 +126,7 @@ class SelectionWindow(QWidget):
         self.label_white_list_criterias = QLabel()
         self.label_white_list_criterias.setText('White list criterias:')
         self.main_layout.addWidget(self.label_white_list_criterias)
-        self.selection_white_list_table = QTableWidget()
+        self.selection_white_list_table = CriteriaTable()
         prepare_table_from_tags(self.selection_white_list_table, self.possible_tags)
         self.main_layout.addWidget(self.selection_white_list_table)
 
@@ -146,7 +147,7 @@ class SelectionWindow(QWidget):
         self.label_black_list_criterias = QLabel()
         self.label_black_list_criterias.setText('Black list criterias:')
         self.main_layout.addWidget(self.label_black_list_criterias)
-        self.selection_black_list_table = QTableWidget()
+        self.selection_black_list_table = CriteriaTable()
         prepare_table_from_tags(self.selection_black_list_table, self.possible_tags)
         self.main_layout.addWidget(self.selection_black_list_table)
 
@@ -219,6 +220,8 @@ class SelectionWindow(QWidget):
         clear_table(self.selection_white_list_table)
         clear_table(self.selection_black_list_table)
         self.tf_selection_name.setText('')
+        self.tf_duration_max.setText('0')
+        self.tf_duration_min.setText('0')
 
     def add_row_to_white_list_table(self):
         """Adds a row to the whitelist table."""
