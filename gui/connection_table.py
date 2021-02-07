@@ -3,10 +3,40 @@ Created on 11.10.2020
 
 @author: Bjoern Graebe
 '''
-from PyQt5.Qt import QTableWidget, QComboBox, QMenu, QLabel
+from copy import deepcopy
+from PyQt5.Qt import QTableWidget, QComboBox, QMenu, QLabel, QMessageBox
 from PyQt5.QtCore import Qt
 from control.global_properties import GlobalProperties
 from gui.selection_window import WindowMode,open_selection_window
+
+def copy_selection(p_selection,p_with_connections=True):
+    """Copy p_selection into a new collection and adds this to
+        the selection of """
+    global_properties = GlobalProperties.get_instance()
+    new_selection = deepcopy(p_selection)
+    copy_selection_name = new_selection.name
+    copy_selection_name = copy_selection_name + " ( copy )"
+    if global_properties.mpdj_data.selection_with_name_exists(copy_selection_name):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Unable to create selection_copy, name exists.")
+        msg.setInformativeText(
+            "{} can't be created, a selection with this name exists.".format(copy_selection_name))
+        msg.setWindowTitle("MessageBox ")
+        msg.setDetailedText("The details are as follows:")
+    new_selection.set_name(copy_selection_name)
+    global_properties.mpdj_data.add_song_selection(new_selection)
+    if p_with_connections:
+        neighbours = global_properties.mpdj_data.get_neighbours_for_node_name(
+            p_selection.get_name())
+        for neighbour in neighbours:
+            global_properties.mpdj_data.set_connected(copy_selection_name,neighbour,1,False)
+        all_selections = global_properties.mpdj_data.get_song_selection_names()
+        for selection in all_selections:
+            if global_properties.mpdj_data.is_connected(selection,
+                                                        p_selection.get_name()):
+                global_properties.mpdj_data.set_connected(selection,copy_selection_name,1,False)
+    global_properties.inform_update_listener()
 
 class ConnectionTableWidget(QTableWidget):
     '''
@@ -101,8 +131,12 @@ class ConnectionTableWidget(QTableWidget):
     def show_header_right_click_menu(self, position):
         """Display the menu for header actions."""
         menu = QMenu()
-        remove_selection = menu.addAction('Remove song selection')
+
         change_selection = menu.addAction('Change song selection')
+        copy_selected_selection = menu.addAction('Copy song selection')
+        copy_selected_selection_with_connections = menu.addAction(
+            'Copy song selection with connection')
+        remove_selection = menu.addAction('Remove song selection')
         action = menu.exec_(self.mapToGlobal(position))
         logical_index_x = self.horizontal_headers.logicalIndexAt(position.x())
         logical_index_y = self.vertical_headers.logicalIndexAt(position.y())
@@ -115,8 +149,17 @@ class ConnectionTableWidget(QTableWidget):
         if action == remove_selection:
             global_properties.mpdj_data.remove_song_selection_by_name(name_of_selection)
             global_properties.inform_update_listener()
+            return
         if action == change_selection:
             open_selection_window(WindowMode.edit, name_of_selection)
+            return
+        selection = global_properties.mpdj_data.get_song_selection_by_name(name_of_selection)
+        if action == copy_selected_selection:
+            copy_selection(selection, False)
+            return
+        if action == copy_selected_selection_with_connections:
+            copy_selection(selection,True)
+            return
 
     def __init__(self):
         """Constructor"""

@@ -97,6 +97,10 @@ class SongSelection():
     def get_name(self):
         """Returns the name of the song selection."""
         return self.name
+    
+    def set_name(self, p_new_name):
+        """Sets the name of the so selection to the given value,"""
+        self.name = p_new_name
 
     def __repr__(self):
         """ Returns a string representation of an object of this type."""

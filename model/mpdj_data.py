@@ -45,7 +45,7 @@ class MPDJData():
                       if self.selection_connections[p_node_name][key] == 1]
         return result
 
-    def set_connected(self, p_selection_1, p_selection_2,p_is_connected : bool,
+    def set_connected(self, p_selection_1, p_selection_2,p_is_connected : int,
                       p_mark_opposit_direction=True):
         """Sets the value for the connection from p_selection_1 to p_selection_2,
            to p_is_connected. If p_mark_opposit_direction is True, the connection

@@ -91,4 +91,3 @@ class SongSelectorMinimalPlayCount():
     def __init__(self):
         """Constructor"""
         self.song_block_list = defaultdict(lambda: defaultdict(lambda: 0))
-
