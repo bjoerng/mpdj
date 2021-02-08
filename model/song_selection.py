@@ -73,12 +73,12 @@ class SongSelection():
         song_result_list = self.get_songs_matching_whitelist_from_mpdconnection(
             p_mpdconnection)
         #print('Songs got from mpd: {}'.format(len(song_result_list)))
-        if self.min_duration != 0:
+        if hasattr(self, 'min_duration') and self.min_duration != 0:
             tmp_result_list = [song for song in song_result_list
                                if int(song['time']) >= self.min_duration]
             song_result_list = tmp_result_list
         #print('Filtered by minimum: {}'.format(len(song_result_list)))
-        if self.max_duration != 0:
+        if hasattr(self, 'max_duration') and self.max_duration != 0:
             tmp_result_list = [ song for song in song_result_list
                                if int(song['time']) <= self.max_duration]
             song_result_list = tmp_result_list
