@@ -21,7 +21,7 @@ class PlayData():
 
     def get_play_count_of_song_value(self, p_value : str, p_key : str):
         """Return how often songs have been played where the value of
-            p_key ist p_value."""
+            p_key is p_value."""
         return self.song_play_data[p_key][p_value]
 
     def process_played_node(self, p_node : SongSelection):

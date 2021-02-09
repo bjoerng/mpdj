@@ -5,16 +5,48 @@ Created on 14.11.2020
 '''
 import math
 import random
+import sys
 from functools import reduce
 from model.mpdj_data import MPDJData
 from model.play_data import PlayData
 from model.mpd_connection import MPDConnection
 
+def calculate_node_weight_with_song_play_count(p_play_data : PlayData,
+                                               p_song_lists : list):
+    """Takes the p_play_data and p_song_lists as a list of songlists. This function
+        will calculate weight of each songlist in p_song_lists, to use in
+        random.choice. The result will be based on the playcound for each
+        of those lists."""
+    result = []
+    for songs_in_list in p_song_lists:
+        song_play_count = reduce(lambda x, y:x + y, (map(lambda song:
+                    p_play_data.get_play_count_of_song_value(song['file'], 'file'),
+                    songs_in_list)), 0)
+        result.append(float(len(songs_in_list)) / (1.0 + song_play_count))
+    return result
 
 class NodeSelectionMinimalAveragePlaycountWeightedProbabilities():
     """The node selector selects the next node by using the count of
         songs in a node divided by (1 + plays of songs in this node)
         and uses this as the weight for a random choice. """
+
+    def get_possible_next_neighbours(self, p_node_name_now : str, p_mpdj_data : MPDJData,
+                                     p_play_data : PlayData, p_mpd_connection : MPDConnection):
+        neighbours_in_graph = p_mpdj_data.get_neighbours_for_node_name(p_node_name_now)
+        if len(neighbours_in_graph) < 1:
+            print('No neighbours for {} considering all nodes as next'.format(p_node_name_now))
+            neighbours_in_graph = p_mpdj_data.get_song_selection_names()
+        if len(neighbours_in_graph) > 1 and p_play_data.previous_node in neighbours_in_graph:
+            neighbours_in_graph.remove(p_play_data.previous_node)
+        neighbours_with_song_count_not_zero = dict()
+        for node in neighbours_in_graph:
+            songs_in_node = p_mpdj_data.get_song_selection_by_name(node).get_songs(p_mpd_connection)
+            if len(songs_in_node) == 0:
+                sys.stderr.write('Node {} has now songs, ignoring it.'.format(node))
+                continue
+            neighbours_with_song_count_not_zero[node] = songs_in_node
+        return neighbours_with_song_count_not_zero
+
     def get_next_neighbour(self, p_node_name_now : str, p_mpdj_data : MPDJData,
                          p_play_data : PlayData,
                          p_mpd_connection : MPDConnection) -> str:
@@ -23,28 +55,45 @@ class NodeSelectionMinimalAveragePlaycountWeightedProbabilities():
             of songs in this node."""
         random.seed()
         neighbour_node_names = p_mpdj_data.get_neighbours_for_node_name(p_node_name_now)
+        # If node does not have any neighbours, we will select a random one from the set
+        # of all neighbours.
+        if len(neighbour_node_names) < 1:
+            print('No neighbours for {} considering all nodes as next'.format(p_node_name_now))
+            neighbour_node_names = p_mpdj_data.get_song_selection_names()
         if len(neighbour_node_names) > 1 and p_play_data.previous_node in neighbour_node_names:
             neighbour_node_names.remove(p_play_data.previous_node)
 
-        node_weights = []
-        for node in neighbour_node_names:
-            songs_in_node = p_mpdj_data.get_song_selection_by_name(node).get_songs(p_mpd_connection)
-            song_play_count = reduce(lambda x,y: x+y, (map(lambda song:
-                                p_play_data.get_play_count_of_song_value(song['file'], 'file'),
-                                songs_in_node)))
-            node_weights.append(float(len(songs_in_node))/(1.0 + song_play_count))
-        choice = random.choices(population=neighbour_node_names,weights=node_weights,k=1)
-        print (neighbour_node_names)
-        print (node_weights)
-        print (choice)
+        nodes_with_song_count_not_zero = self.get_possible_next_neighbours(p_node_name_now,
+                                                                           p_mpdj_data,
+                                                                           p_play_data,
+                                                                           p_mpd_connection)
+        node_weights = calculate_node_weight_with_song_play_count(
+            p_play_data,
+            list(nodes_with_song_count_not_zero.values()))
+        choice = random.choices(population=[*nodes_with_song_count_not_zero],
+                                weights=node_weights,k=1)
         return choice[0]
+
+    def get_possible_next_nodes_with_probabilities(self, p_node_name_now : str,
+                                                 p_mpdj_data : MPDJData, p_play_data : PlayData,
+                                                 p_mpd_connection : MPDConnection):
+        """Returns next next possible neighbours with probabilities."""
+        possible_next_neighbours = self.get_possible_next_neighbours(p_node_name_now, p_mpdj_data,
+                                     p_play_data, p_mpd_connection)
+        node_weights= calculate_node_weight_with_song_play_count(
+            p_play_data,
+            list(possible_next_neighbours.values()))
+        weight_sum = reduce(lambda x,y: x+y, node_weights,0.0)
+        probabilities_per_node = [weight / weight_sum for weight in node_weights]
+        nodes_with_probabilities = dict(zip(possible_next_neighbours,probabilities_per_node))
+        return nodes_with_probabilities
 
     def __init__(self):
         """Constructor"""
 
 class NodeSelectionMinimalAveragePlaycount():
     """The next selected node is the one with the minimum of average play
-        count. If there are multiple nodes with the same avaerga play count
+        count. If there are multiple nodes with the same average play count
         one of the mill be selected randomly."""
     def get_next_neighbour(self, p_node_name_now : str, p_mpdj_data : MPDJData,
                          p_play_data : PlayData,
