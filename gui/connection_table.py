@@ -58,6 +58,7 @@ class ConnectionTableWidget(QTableWidget):
         self.initiate_combo_boxes()
         self.update_neighbour_count()
 
+
     def initiate_combo_boxes(self):
         """Sets the horizontal and vertical headers, initiates the comboboxes
             sets the comboboxes to the right values, found in the model."""
@@ -127,11 +128,15 @@ class ConnectionTableWidget(QTableWidget):
         """Updates the neighbour count for rows and columns."""
         self.update_neighbour_count_column()
         self.update_neighbour_count_row()
+        if not isinstance(self.cellWidget(self.rowCount() - 1, self.columnCount() - 1),QLabel):
+            self.setCellWidget(self.rowCount() - 1, self.columnCount() - 1,QLabel())
+        self.cellWidget(self.rowCount() - 1, self.columnCount() - 1).setText('')
 
     def show_header_right_click_menu(self, position):
         """Display the menu for header actions."""
         menu = QMenu()
 
+        add_selection = menu.addAction('Add selection')
         change_selection = menu.addAction('Change song selection')
         copy_selected_selection = menu.addAction('Copy song selection')
         copy_selected_selection_with_connections = menu.addAction(
@@ -160,6 +165,8 @@ class ConnectionTableWidget(QTableWidget):
         if action == copy_selected_selection_with_connections:
             copy_selection(selection,True)
             return
+        if action == add_selection:
+            open_selection_window(WindowMode.new)
 
     def __init__(self):
         """Constructor"""
