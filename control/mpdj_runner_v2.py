@@ -60,8 +60,8 @@ class MPDJRunnerV2():
             next_nodes_with_probabilities = self.node_selector.get_possible_next_nodes_with_probabilities(
             self.play_data.current_node,self.mpdj_data,self.play_data,self.mpd_connection)
             print ('Next nodes with probability:')
-            for node, probability in next_nodes_with_probabilities.items():
-                print ('{}: {:.2%}'.format(node, probability))
+            for node_prob in sorted(next_nodes_with_probabilities.items(), key=lambda x: x[1]):
+                print ('{}: {:.2%}'.format(node_prob[0], node_prob[1]))
             print ('______________________________________________________________________')
             while (self.mpd_connection.get_current_song_number() + 1
             < self.mpd_connection.get_play_list_length()):

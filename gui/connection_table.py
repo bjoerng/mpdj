@@ -113,7 +113,7 @@ class ConnectionTableWidget(QTableWidget):
             self.cellWidget(column, column_count - 1).setText(str(neighbour_count))
 
     def update_neighbour_count_column(self):
-        """The method updates the neighbour count for each column"""
+        """The method updates the neighbor count for each column"""
         row_count = self.rowCount()
         for row in range(0,row_count - 1):
             neighbour_count = 0
