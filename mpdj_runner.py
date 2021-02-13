@@ -38,4 +38,7 @@ if __name__ == '__main__':
     mpdjRunner = MPDJRunnerV2(HOST,PORT)
     with open(file, 'r') as loadFile:
         mpdjRunner.mpdj_data = jsonpickle.decode(loadFile.read())
-    mpdjRunner.run()
+    try:
+        mpdjRunner.run()
+    except KeyboardInterrupt:
+        print('leaving....')

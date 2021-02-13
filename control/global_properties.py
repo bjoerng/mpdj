@@ -13,6 +13,11 @@ def new_mpdj_data():
     global_properties = GlobalProperties.get_instance()
     global_properties.new_mpdj()
 
+def inform_about_changes_in_mpdj():
+    """This informs global_properties about changes in the current mpdj_data."""
+    global_properties = GlobalProperties.get_instance()
+    global_properties.changes_happened_since_last_save = True
+
 class GlobalProperties():
     """This singleton contains stuff, which needs to be accessible
     from everywhere in mpdj."""
@@ -23,6 +28,19 @@ class GlobalProperties():
         if GlobalProperties.__instance is None:
             GlobalProperties()
         return GlobalProperties.__instance
+
+    @property
+    def changes_happened_since_last_save(self):
+        """Indicates if changes happened since last save."""
+        return self._changes_happened_since_last_save
+
+    @changes_happened_since_last_save.setter
+    def changes_happened_since_last_save(self, p_new_value):
+        self._changes_happened_since_last_save = p_new_value
+
+    @changes_happened_since_last_save.deleter
+    def changes_happened_since_last_save(self):
+        del self._changes_happened_since_last_save
 
     def add_listener(self, p_listener):
         """Adds a listener so if anything changes the listener will be
@@ -38,7 +56,6 @@ class GlobalProperties():
         """This method inform all added listeners about changes."""
         for update_listener in self.update_listeners:
             update_listener.update()
-        self.changes_happened_since_last_save = True
 
     def save_mpdj_data_to_file(self, p_file_name):
         """Write the momentary MPDJ-data to p_file_name."""
@@ -52,6 +69,7 @@ class GlobalProperties():
         """Loads a mpdj file, overwrite the momentary MPDJ-data."""
         with open(p_file_name, 'r') as load_file:
             self.mpdj_data = jsonpickle.decode(load_file.read())
+        self.mpdj_data.add_function_to_call_on_change(inform_about_changes_in_mpdj)
         self.inform_update_listener()
         self.changes_happened_since_last_save = False
         self.path_of_current_file = p_file_name
@@ -61,6 +79,7 @@ class GlobalProperties():
         """Creates a new mpdj data to work on (empties all the data
             currently loaded)"""
         self.mpdj_data = MPDJData()
+        self.mpdj_data.add_function_to_call_on_change(inform_about_changes_in_mpdj)
         self.path_of_current_file = ''
         self.changes_happened_since_last_save = False
         self.inform_update_listener()
@@ -78,12 +97,13 @@ class GlobalProperties():
             self.mpd_connection.connect()
             # The momentary MPDJ data.
             self.mpdj_data = MPDJData()
+            self.mpdj_data.add_function_to_call_on_change(inform_about_changes_in_mpdj)
             # The update listeners which are informed about changes.
             self.update_listeners = []
             # The path of the file which we are working on
             self.path_of_current_file = ''
             # Indicates changes since the last save or load operation.
-            self.changes_happened_since_last_save = False
+            self._changes_happened_since_last_save = False
             # Edit connections so the graph the graph simulates an undirected graph
 #            self.edit_both_directions = True
             # The current opened windows.

@@ -32,6 +32,8 @@ class NodeSelectionMinimalAveragePlaycountWeightedProbabilities():
 
     def get_possible_next_neighbours(self, p_node_name_now : str, p_mpdj_data : MPDJData,
                                      p_play_data : PlayData, p_mpd_connection : MPDConnection):
+        """Returns those neighbors who could be selected as next neighbors. Dependent of
+            p_node_name_now, p_mpdj_data, p_play_data and p_mpd_connection."""
         neighbours_in_graph = p_mpdj_data.get_neighbours_for_node_name(p_node_name_now)
         if len(neighbours_in_graph) < 1:
             print('No neighbours for {} considering all nodes as next'.format(p_node_name_now))
@@ -160,4 +162,4 @@ class NodeSelectionMinimalKnotPlayCount():
         '''
         Constructor
         '''
-            
+

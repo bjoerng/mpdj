@@ -106,7 +106,9 @@ class MainWindowMPDJ(QMainWindow):
         file_save_dialog.setNameFilters(["MPDJ files (*.{})".format(FILE_SUFFIX)])
         file_save_dialog.selectNameFilter("MPDJ files (*.{})".format(FILE_SUFFIX))
         file_save_dialog.setDefaultSuffix((FILE_SUFFIX))
-        file_save_dialog.exec_()
+        exec_value = file_save_dialog.exec()
+        if exec_value == 0:
+            return None
         file_names = file_save_dialog.selectedFiles()
         if len (file_names) != 1:
             message_box = QMessageBox()
@@ -122,7 +124,8 @@ class MainWindowMPDJ(QMainWindow):
         """Saves the file. opens a file_dialog which asks for the
             filename."""
         file_name = self.file_dialog(load_save_type = QFileDialog.AcceptSave)
-        self.save_mpdj_data_to_file(file_name)
+        if file_name:
+            self.save_mpdj_data_to_file(file_name)
 
     def save_mpdj_data_to_file(self, p_file_name : str):
         """Saves the current mpdj data to the file by the path given
@@ -142,25 +145,29 @@ class MainWindowMPDJ(QMainWindow):
     def file_save(self):
         """Saves the current mpdj data to the current file."""
         global_properties = GlobalProperties.get_instance()
-        self.save_mpdj_data_to_file(global_properties.path_of_current_file)
+        if len(global_properties.path_of_current_file) > 0:
+            self.save_mpdj_data_to_file(global_properties.path_of_current_file)
+        else:
+            self.file_save_as()
 
     def file_load(self):
         """Loads mpdj data from a file. Opens a file dialog which
             asks for the file to load."""
         global_properties = GlobalProperties.get_instance()
         file_name = self.file_dialog(load_save_type = QFileDialog.AcceptOpen)
-        if global_properties.changes_happened_since_last_save:
-            retval = show_discard_data_ok_cancel_message()
-        if not global_properties.changes_happened_since_last_save or retval == QMessageBox.Ok:
-            try:
-                global_properties.load_mpdjdata_from_file(file_name)
-            except AttributeError as err:
-                message_box = QMessageBox()
-                message_box.setText('Error reading your MPDJ-File: {}'.format(err))
-                message_box.setWindowTitle('Load error.')
-                message_box.setStandardButtons(QMessageBox.Ok)
-                message_box.setIcon(QMessageBox.Warning)
-                message_box.exec_()
+        if file_name:
+            if global_properties.changes_happened_since_last_save:
+                retval = show_discard_data_ok_cancel_message()
+            if not global_properties.changes_happened_since_last_save or retval == QMessageBox.Ok:
+                try:
+                    global_properties.load_mpdjdata_from_file(file_name)
+                except AttributeError as err:
+                    message_box = QMessageBox()
+                    message_box.setText('Error reading your MPDJ-File: {}'.format(err))
+                    message_box.setWindowTitle('Load error.')
+                    message_box.setStandardButtons(QMessageBox.Ok)
+                    message_box.setIcon(QMessageBox.Warning)
+                    message_box.exec_()
 
     def __init__(self):
         """Constructor"""
