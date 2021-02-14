@@ -29,10 +29,18 @@ def file_new_clicked():
         new_mpdj_data()
 
 def make_bidirectional_or():
+    """Transforms a directed graph into an undirected graph.
+        With this function a connection will be established
+        if on directions is established before. """
     global_properties = GlobalProperties.get_instance()
     global_properties.mpdj_data.make_bidirectional(any)
-    
+
 def make_bidirectional_and():
+    """Transforms a directed graph into an undirected graph.
+        With this function a connections will remain, if 
+        both directions are established before. A
+        connection will be deleted, when less than 
+        both directions are established."""
     global_properties = GlobalProperties.get_instance()
     global_properties.mpdj_data.make_bidirectional(all)
 
