@@ -4,6 +4,7 @@ Created on 20.09.2020
 @author: Bjoern Graebe
 '''
 from enum import Enum
+import copy
 from model.song_selection import SongSelection
 
 class UnitPerNodeTouch(Enum):
@@ -241,4 +242,20 @@ class MPDJData():
             if p_old_name in self._selection_connections[song_selection_name]:
                 self._selection_connections[song_selection_name][p_new_selection.get_name()]\
                 = self._selection_connections[song_selection_name].pop(p_old_name)
+        self._run_functions_on_updates()
+
+    def make_bidirectional(self, bool_func):
+        """Turns the connections graph into a bidirectional graph. Uses bool_func
+            to calculate the new value. all and any are possible functions."""
+        copied_selection_connections = copy.deepcopy(self._selection_connections)
+        # We read from a copy, because we will change the length of the original.
+        for name1 in copied_selection_connections:
+            for name2 in copied_selection_connections[name1]:
+                if bool_func([copied_selection_connections[name1][name2],
+                              name2 in copied_selection_connections.keys() and
+                              name1 in copied_selection_connections[name2].keys() and
+                              copied_selection_connections[name2][name1]]):
+                    self.set_connected(name1, name2, 1, True)
+                else:
+                    self.set_connected(name1, name2, 0, True)
         self._run_functions_on_updates()

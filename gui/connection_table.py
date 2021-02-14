@@ -98,7 +98,6 @@ class ConnectionTableWidget(QTableWidget):
         global_properties.mpdj_data.set_connected(artist_column,artist_row,
                                                   artist_connection_value,
                                                   mark_opposit_direction)
-        global_properties.inform_update_listener()
 
     def update_neighbour_count_row(self):
         """This method updates the neighbour count for each row."""

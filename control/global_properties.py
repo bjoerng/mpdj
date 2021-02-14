@@ -17,6 +17,7 @@ def inform_about_changes_in_mpdj():
     """This informs global_properties about changes in the current mpdj_data."""
     global_properties = GlobalProperties.get_instance()
     global_properties.changes_happened_since_last_save = True
+    global_properties.inform_update_listener()
 
 class GlobalProperties():
     """This singleton contains stuff, which needs to be accessible
@@ -70,7 +71,6 @@ class GlobalProperties():
         with open(p_file_name, 'r') as load_file:
             self.mpdj_data = jsonpickle.decode(load_file.read())
         self.mpdj_data.add_function_to_call_on_change(inform_about_changes_in_mpdj)
-        self.inform_update_listener()
         self.changes_happened_since_last_save = False
         self.path_of_current_file = p_file_name
         self.inform_update_listener()

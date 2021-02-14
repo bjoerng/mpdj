@@ -28,6 +28,14 @@ def file_new_clicked():
                             or ok_or_cancel == QMessageBox.Ok):
         new_mpdj_data()
 
+def make_bidirectional_or():
+    global_properties = GlobalProperties.get_instance()
+    global_properties.mpdj_data.make_bidirectional(any)
+    
+def make_bidirectional_and():
+    global_properties = GlobalProperties.get_instance()
+    global_properties.mpdj_data.make_bidirectional(all)
+
 def show_discard_data_ok_cancel_message():
     """Shows a QMessageBox to ask if the current mpdj data should be
         discarded. Contains an OK and an Cancel Button."""
@@ -74,7 +82,7 @@ class MainWindowMPDJ(QMainWindow):
         global_properties = GlobalProperties.get_instance()
         global_properties.mpdj_data.max_units_per_node_touch = int(self.tf_max_per_selection.text())
 
-    def write_unit_per_node_touchto_mpdj(self):
+    def write_unit_per_node_touch_to_mpdj(self):
         """Writes the selected unit for min and max per touch to the mpdj.
             This does not do anything at the moment. Has to be
             implemented properly"""
@@ -187,6 +195,11 @@ class MainWindowMPDJ(QMainWindow):
         self.menu_file.addSeparator()
         self.menu_file.addAction('Exit',sys.exit)
 
+        self.menu_file = self.menu_bar.addMenu('Connections')
+        self.make_birectional_menu = self.menu_file.addMenu('Make bidirectional')
+        self.make_birectional_menu.addAction("both connected", make_bidirectional_and)
+        self.make_birectional_menu.addAction("one connected", make_bidirectional_or)
+
         self.menu_selection =self.menu_bar.addMenu('Selections')
         self.action_add_selection = self.menu_selection.addAction('Add Selection')
         self.action_add_selection.triggered.connect(create_add_selection_window)
@@ -212,7 +225,7 @@ class MainWindowMPDJ(QMainWindow):
             self.combo_box_minutes_or_titles.addItem(str_rept.gui_representation())
         self.mpdj_options_dock_layout.addRow('Unit:', self.combo_box_minutes_or_titles)
         self.combo_box_minutes_or_titles.currentTextChanged.connect(
-            self.write_unit_per_node_touchto_mpdj)
+            self.write_unit_per_node_touch_to_mpdj)
 
         self.mpdj_docked_widget.setLayout(self.mpdj_options_dock_layout)
         self.mpdj_options_dock.setWidget(self.mpdj_docked_widget)
