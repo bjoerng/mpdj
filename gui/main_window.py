@@ -205,8 +205,8 @@ class MainWindowMPDJ(QMainWindow):
 
         self.menu_file = self.menu_bar.addMenu('Connections')
         self.make_birectional_menu = self.menu_file.addMenu('Make bidirectional')
-        self.make_birectional_menu.addAction("both connected", make_bidirectional_and)
-        self.make_birectional_menu.addAction("one connected", make_bidirectional_or)
+        self.make_birectional_menu.addAction("with and", make_bidirectional_and)
+        self.make_birectional_menu.addAction("wiht or", make_bidirectional_or)
 
         self.menu_selection =self.menu_bar.addMenu('Selections')
         self.action_add_selection = self.menu_selection.addAction('Add Selection')
