@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 '''
 Created on 12.09.2020
 
@@ -12,8 +11,6 @@ from control.global_properties import GlobalProperties
 from gui.criterias_table import CriteriaTable
 
 PLUSBUTTONWITH = 50
-
-
 
 class WindowMode(Enum):
     """This Enum represents the Mode of the selection window.

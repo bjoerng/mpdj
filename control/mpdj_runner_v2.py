@@ -46,7 +46,6 @@ class MPDJRunnerV2():
             self.mpd_connection.add_song_to_playlist(song['file'])
             self.play_data.process_played_song(song)
 
-
     def run(self):
         """Runs the mpdj. Clears the playlist, configures the mpd to
             run mpdj and ensures it is playing."""

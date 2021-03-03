@@ -3,14 +3,37 @@ Created on 20.09.2020
 
 @author: Bjoern Graebe
 '''
-from enum import Enum
-import copy
+from enum import Enum, unique, auto
+from copy import deepcopy
+from _collections import defaultdict
 from model.song_selection import SongSelection
+
 
 class UnitPerNodeTouch(Enum):
     """Provides the mechanism to select the limit type of songs per node."""
     MINUTES = 1
     SONGS = 2
+
+    def gui_representation(self):
+        """Return a representations of the unit type for use in the GUI."""
+        return self.name.lower()
+
+@unique
+class ConnectionMergeMode(Enum):
+    """Determines if the connections of the two nodes merges will be calculated with
+        a logical 'and' or 'or' connection"""
+    AND=auto()
+    OR=auto()
+    NO=auto()
+
+    def calculate_connection(self,p_connection_value1 : int, p_connection_value2 : int):
+        """Calculates the new connection value given two old connection """
+        if self == ConnectionMergeMode.AND:
+            return min(p_connection_value1, p_connection_value2)
+        if self == ConnectionMergeMode.OR:
+            return max(p_connection_value1, p_connection_value2)
+        if self == ConnectionMergeMode.NO:
+            return 0
 
     def gui_representation(self):
         """Return a representations of the unit type for use in the GUI."""
@@ -247,7 +270,7 @@ class MPDJData():
     def make_bidirectional(self, bool_func):
         """Turns the connections graph into a bidirectional graph. Uses bool_func
             to calculate the new value. all and any are possible functions."""
-        copied_selection_connections = copy.deepcopy(self._selection_connections)
+        copied_selection_connections = deepcopy(self._selection_connections)
         # We read from a copy, because we will change the length of the original.
         for name1 in copied_selection_connections:
             for name2 in copied_selection_connections[name1]:
@@ -258,4 +281,32 @@ class MPDJData():
                     self.set_connected(name1, name2, 1, True)
                 else:
                     self.set_connected(name1, name2, 0, True)
+        self._run_functions_on_updates()
+
+    def merge_two_nodes_into_one(self, p_selection1_name : str,
+                                 p_selection2_name : str,
+                                 p_new_name : str, p_connection_mode : ConnectionMergeMode):
+        """Merges two notes into one. white and black list criterias are merged, duration are
+            taken from the first node. Returns a new node. Deletes the source nodes."""
+        new_node = deepcopy(self.get_song_selection_by_name(p_selection1_name))
+        new_node.set_name(p_new_name)
+        new_node.list_of_white_list_criterias.extend(
+            self.get_song_selection_by_name(p_selection2_name).list_of_white_list_criterias)
+        new_node.list_of_black_list_criterias.extend(
+            self.get_song_selection_by_name(p_selection2_name).list_of_black_list_criterias)
+        new_connections = defaultdict(dict)
+        for node in self.get_song_selection_names():
+            new_connections[node][p_new_name]=p_connection_mode.calculate_connection(
+                self.is_connected(node, p_selection1_name),
+                self.is_connected(node, p_selection2_name))
+            new_connections[p_new_name][node] = p_connection_mode.calculate_connection(
+                self.is_connected(p_selection1_name, node),
+                self.is_connected(p_selection2_name, node))
+        self.remove_song_selection_by_name(p_selection1_name)
+        self.remove_song_selection_by_name(p_selection2_name)
+        self.add_song_selection(new_node)
+        for first_node_name in new_connections.keys():
+            for second_node_name in new_connections[first_node_name]:
+                if new_connections[first_node_name][second_node_name]:
+                    self.set_connected(first_node_name, second_node_name, 1, False)
         self._run_functions_on_updates()

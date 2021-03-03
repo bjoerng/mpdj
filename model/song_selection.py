@@ -3,14 +3,8 @@ Created on 13.09.2020
 
 @author: Bjoern Graebe
 '''
-from enum import Enum, unique, auto
-from model.mpd_connection import MPDConnection
-from control.global_properties import GlobalProperties
 
-@unique
-class ConctionMergeMode(Enum):
-    AND=auto()
-    OR=auto()
+from model.mpd_connection import MPDConnection
 
 def is_song_matching_criteria(p_song : dict, p_criteria : dict) -> bool :
     """Indicates if p_song is matched by p_criteria"""
@@ -113,21 +107,3 @@ class SongSelection():
         return "Name: " + self.name + ", WhiteList: "\
             + self.list_of_white_list_criterias.__repr__()\
             + ", BlackList: " + self.list_of_black_list_criterias.__repr__()
-
-def merge_two_nodes_into_one(p_selection1 : SongSelection,
-                             p_selection2 : SongSelection,
-                             p_new_name : str,
-                             ):
-    """Merges two notes into one. white and black list criterias are merged, duration ar
-    taken from the first node. Returns a new node. Deletes the source nodes."""
-    new_node=p_selection1.deepcopy()
-    new_node.set_name(p_new_name)
-    new_node.list_of_white_list_criterias.append(
-        p_selection2.list_of_white_list_criterias)
-    new_node.list_of_black_list_criterias.append(
-        p_selection2.list_of_black_list_criterias)
-    global_properties = GlobalProperties.get_instance()
-    global_properties.mpdj_data.remove_song_selection_by_name(p_selection1.name)
-    global_properties.mpdj_data.remove_song_selection_by_name(p_selection2.name)
-    global_properties.mpdj_data.add_song_selection(new_node)
-    

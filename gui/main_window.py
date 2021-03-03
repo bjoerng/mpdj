@@ -9,14 +9,20 @@ from PyQt5.Qt import QMainWindow, QFileDialog, QMessageBox, QDockWidget,\
 from PyQt5.QtCore import Qt
 
 from gui.connection_table import ConnectionTableWidget
-from gui.selection_window import open_selection_window,WindowMode
+from gui.selection_window import open_selection_window, WindowMode
+from gui.merge_nodes_window import open_merge_node_window
 from control.global_properties import GlobalProperties, new_mpdj_data
 from model.constants import FILE_SUFFIX
 from model.mpdj_data import UnitPerNodeTouch
 
+
 def create_add_selection_window():
     """Opens a new selection window with an empty selection."""
     open_selection_window(p_mode=WindowMode.new, p_selection_name='')
+
+def create_merge_selectoon_window():
+    """Opens a new merge selection window."""
+    open_merge_node_window()
 
 def file_new_clicked():
     """This will be executed when menu item File/New is licked.
@@ -206,11 +212,13 @@ class MainWindowMPDJ(QMainWindow):
         self.menu_file = self.menu_bar.addMenu('Connections')
         self.make_birectional_menu = self.menu_file.addMenu('Make bidirectional')
         self.make_birectional_menu.addAction("with and", make_bidirectional_and)
-        self.make_birectional_menu.addAction("wiht or", make_bidirectional_or)
+        self.make_birectional_menu.addAction("with or", make_bidirectional_or)
 
         self.menu_selection =self.menu_bar.addMenu('Selections')
         self.action_add_selection = self.menu_selection.addAction('Add Selection')
         self.action_add_selection.triggered.connect(create_add_selection_window)
+        self.action_merge_selections = self.menu_selection.addAction('Merge Selections')
+        self.action_merge_selections.triggered.connect(create_merge_selectoon_window)
         self.setMenuBar(self.menu_bar)
         self.statusBar().showMessage('Welcome to mpdj!', 5000)
 
@@ -229,8 +237,8 @@ class MainWindowMPDJ(QMainWindow):
         self.tf_max_per_selection.editingFinished.connect(self.write_max_per_note_to_mpdj)
 
         self.combo_box_minutes_or_titles = QComboBox()
-        for str_rept in UnitPerNodeTouch:
-            self.combo_box_minutes_or_titles.addItem(str_rept.gui_representation())
+        self.combo_box_minutes_or_titles.addItems(
+            [unit.gui_representation() for unit in UnitPerNodeTouch])
         self.mpdj_options_dock_layout.addRow('Unit:', self.combo_box_minutes_or_titles)
         self.combo_box_minutes_or_titles.currentTextChanged.connect(
             self.write_unit_per_node_touch_to_mpdj)
