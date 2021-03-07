@@ -44,14 +44,15 @@ def get_song_duration_value(song : dict, p_song_accounting_value=UnitPerNodeTouc
 class SongSelectorMinimalPlayCount():
     """This selector selects songs which have minimal play count."""
 
-    def get_n_songs(self, p_song_selection : SongSelection, p_song_count : int,
+    def get_n_songs(self, p_song_selection : SongSelection, p_duration_max : int,
                     p_mpd_connection : MPDConnection, p_play_data : PlayData,
-                    p_dup_attr_fltr_lst : list, p_song_account_walue=UnitPerNodeTouch.SONGS):
-        """Returns p_song_count if there are enough different songs
+                    p_dup_attr_fltr_lst : list, p_song_account_value=UnitPerNodeTouch.SONGS):
+        """Returns p_duration_max if there are enough different songs
             available. If there are less songs available, this could
-            return less than p_song_count. The other parameters of this
+            return less than p_duration_max. The other parameters of this
             method evaluated to generate a song selection."""
         random.seed()
+        
         songs_in_collection = p_song_selection.get_songs(p_mpd_connection)
         song_count_in_collection = len(songs_in_collection)
         songs_in_collection = [song_url for song_url in songs_in_collection if not
@@ -68,12 +69,21 @@ class SongSelectorMinimalPlayCount():
                 song_candidates.append(song_url)
         result = list()
         results_length = 0
-        while results_length <= p_song_count:
+        while results_length <= p_duration_max:
+            if (p_song_account_value == UnitPerNodeTouch.MINUTES
+                and hasattr(p_song_selection,'limit_time_exceedance')
+                and hasattr(p_song_selection, 'max_time_exceedance')
+                and p_song_selection):
+                song_candidates = [ song for song in song_candidates
+                                   if results_length
+                                   + get_song_duration_value(song, p_song_account_value)
+                                   < p_duration_max + p_song_selection.max_time_exceedance]
             if not song_candidates:
                 break
             selected_song = random.choice(song_candidates)
             result.append(selected_song)
-            results_length += get_song_duration_value(selected_song, p_song_account_walue)
+            results_length += get_song_duration_value(selected_song, p_song_account_value)
+
             song_candidates = [ song for song in song_candidates
                               if not song_is_equal_in_value_to_song(selected_song,
                                                           song,
