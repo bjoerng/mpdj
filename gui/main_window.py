@@ -18,7 +18,7 @@ from model.mpdj_data import UnitPerNodeTouch
 
 def create_add_selection_window():
     """Opens a new selection window with an empty selection."""
-    open_selection_window(p_mode=WindowMode.new, p_selection_name='')
+    open_selection_window(p_mode=WindowMode.NEW, p_selection_name='')
 
 def create_merge_selectoon_window():
     """Opens a new merge selection window."""
@@ -43,9 +43,9 @@ def make_bidirectional_or():
 
 def make_bidirectional_and():
     """Transforms a directed graph into an undirected graph.
-        With this function a connections will remain, if 
+        With this function a connections will remain, if
         both directions are established before. A
-        connection will be deleted, when less than 
+        connection will be deleted, when less than
         both directions are established."""
     global_properties = GlobalProperties.get_instance()
     global_properties.mpdj_data.make_bidirectional(all)
@@ -198,6 +198,7 @@ class MainWindowMPDJ(QMainWindow):
         self.connection_table = ConnectionTableWidget()
         global_properties.add_listener(self.connection_table)
         self.setCentralWidget(self.connection_table)
+        self.connection_table.update()
 
         self.menu_bar = self.menuBar()
         self.menu_file = self.menu_bar.addMenu('File')

@@ -75,7 +75,6 @@ class MergeNodeWindow(QWidget):
         self.setWindowTitle('Merge selections')
         self.setLayout(self.layout)
 
-
     def closeEvent(self, *args, **kwargs):
         """Will be executed, when window is closed."""
         global_properties = GlobalProperties.get_instance()

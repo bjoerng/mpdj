@@ -39,12 +39,13 @@ class SongSelection():
         self.name = p_name
         self.min_duration = 0
         self.max_duration = 0
-        self.limit_time_exceedance = True
-        self.max_time_exceedance = -1
+        self.limit_time_overflow = True
+        self.max_time_overflow = 0
         # This overwrites min and max units per node from mpdj_data if
         # != -1
         self.min_song_units_per_node_touch = -1
         self.max_song_units_per_node_touch = -1
+
 
     def set_white_list_criterias(self, p_white_list_criterias : list):
         """Set the whitelist criterias to p_white_list_criterias."""

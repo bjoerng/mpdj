@@ -52,7 +52,6 @@ class SongSelectorMinimalPlayCount():
             return less than p_duration_max. The other parameters of this
             method evaluated to generate a song selection."""
         random.seed()
-        
         songs_in_collection = p_song_selection.get_songs(p_mpd_connection)
         song_count_in_collection = len(songs_in_collection)
         songs_in_collection = [song_url for song_url in songs_in_collection if not
@@ -69,7 +68,7 @@ class SongSelectorMinimalPlayCount():
                 song_candidates.append(song_url)
         result = list()
         results_length = 0
-        while results_length <= p_duration_max:
+        while results_length <= p_duration_max and song_candidates:
             if (p_song_account_value == UnitPerNodeTouch.MINUTES
                 and hasattr(p_song_selection,'limit_time_exceedance')
                 and hasattr(p_song_selection, 'max_time_exceedance')
@@ -78,8 +77,6 @@ class SongSelectorMinimalPlayCount():
                                    if results_length
                                    + get_song_duration_value(song, p_song_account_value)
                                    < p_duration_max + p_song_selection.max_time_exceedance]
-            if not song_candidates:
-                break
             selected_song = random.choice(song_candidates)
             result.append(selected_song)
             results_length += get_song_duration_value(selected_song, p_song_account_value)

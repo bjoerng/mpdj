@@ -155,7 +155,7 @@ class ConnectionTableWidget(QTableWidget):
             global_properties.inform_update_listener()
             return
         if action == change_selection:
-            open_selection_window(WindowMode.edit, name_of_selection)
+            open_selection_window(WindowMode.EDIT, name_of_selection)
             return
         selection = global_properties.mpdj_data.get_song_selection_by_name(name_of_selection)
         if action == copy_selected_selection:
@@ -165,7 +165,7 @@ class ConnectionTableWidget(QTableWidget):
             copy_selection(selection,True)
             return
         if action == add_selection:
-            open_selection_window(WindowMode.new)
+            open_selection_window(WindowMode.NEW)
 
     def __init__(self):
         """Constructor"""
