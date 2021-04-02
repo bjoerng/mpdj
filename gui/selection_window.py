@@ -306,10 +306,10 @@ class SelectionWindow(QWidget):
         else:
             self.tf_duration_max.setText('0')
         if hasattr(song_selection, 'min_song_units_per_node_touch'):
-            self.tf_duration_min.setText(str(
+            self.tf_node_min_minutes.setText(str(
                 song_selection.min_song_units_per_node_touch))
         if hasattr(song_selection, 'max_song_units_per_node_touch'):
-            self.tf_duration_max.setText(str(
+            self.tf_node_max_minutes.setText(str(
                 song_selection.max_song_units_per_node_touch))
         if hasattr(song_selection, 'limit_time_overflow'):
             self.cb_limit_overflow.setChecked(

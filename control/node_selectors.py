@@ -45,6 +45,7 @@ class NodeSelectionMinimalAveragePlaycountWeightedProbabilities():
             songs_in_node = p_mpdj_data.get_song_selection_by_name(node).get_songs(p_mpd_connection)
             if len(songs_in_node) == 0:
                 sys.stderr.write('Node {} has now songs, ignoring it.'.format(node))
+                sys.stderr.flush()
                 continue
             neighbours_with_song_count_not_zero[node] = songs_in_node
         return neighbours_with_song_count_not_zero
