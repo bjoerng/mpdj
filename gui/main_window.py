@@ -5,7 +5,8 @@ Created on 10.10.2020
 '''
 import sys
 from PyQt5.Qt import QMainWindow, QFileDialog, QMessageBox, QDockWidget,\
-    QCheckBox,QFormLayout,QLabel,QWidget, QLineEdit, QIntValidator, QComboBox
+    QCheckBox,QFormLayout,QLabel,QWidget, QLineEdit, QIntValidator,\
+    QComboBox, QHBoxLayout
 from PyQt5.QtCore import Qt
 
 from gui.connection_table import ConnectionTableWidget
@@ -83,6 +84,11 @@ class MainWindowMPDJ(QMainWindow):
 #            global_properties.mpdj_data.limit_artist_in_node_touch)
         self.chk_box_graph_is_directed.setChecked(global_properties.mpdj_data.graph_is_directed)
         self.setWindowTitle('MPDJ: {}'.format(global_properties.path_of_current_file))
+
+    def write_min_global_song_duration_to_mpdj(self):
+        global_properties = GlobalProperties.get_instance()
+        global_properties.mpdj_data.
+        int(self.tf_min_global_song_duration.text())
 
     def write_min_per_note_to_mpdj(self):
         """Write the selected min count per node touch to the mpdj which
@@ -227,6 +233,20 @@ class MainWindowMPDJ(QMainWindow):
         self.mpdj_options_dock_layout = QFormLayout()
         self.mpdj_docked_widget = QWidget()
 
+        self.tf_min_global_song_duration = QLineEdit()
+        self.tf_min_global_song_duration.setValidator(QIntValidator(0,2147483647))
+        self.mpdj_options_dock_layout.addRow('Global min song duration:',
+                                             self.tf_min_global_song_duration)
+        self.tf_min_global_song_duration.editingFinished().connect(
+            )
+
+        self.tf_max_global_song_duration = QLineEdit()
+        self.tf_max_global_song_duration.setValivation(QIntValidator(0,2147483647))
+        self.mpdj_options_dock_layout.addRow('Global max song duration:',
+                                             self.tf_max_global_song_duration)
+        self.tf_max_global_song_duration.editingFinished().connect(
+            self.write_max_song_duration_global_mpdj)
+
         self.tf_min_per_selection = QLineEdit()
         self.tf_min_per_selection.setValidator(QIntValidator(0,2147483647))
         self.mpdj_options_dock_layout.addRow('Min per Node touch:', self.tf_min_per_selection)
@@ -243,6 +263,18 @@ class MainWindowMPDJ(QMainWindow):
         self.mpdj_options_dock_layout.addRow('Unit:', self.combo_box_minutes_or_titles)
         self.combo_box_minutes_or_titles.currentTextChanged.connect(
             self.write_unit_per_node_touch_to_mpdj)
+
+        self.tf_global_node_max_overflow_minutes = QLineEdit()
+        self.tf_global_node_max_overflow_minutes.setValidator(QIntValidator(0,2147483647))
+        self.cb_global_limit_overflow = QCheckBox()
+        self.cb_global_limit_overflow.stateChanged.connect(
+            lambda: self.tf_global_node_max_overflow_minutes.setDisabled(
+                not self.cb_global_limit_overflow.isChecked()))
+        self.overflow_layoout = QHBoxLayout()
+        self.overflow_layoout.addWidget(self.cb_limit_overflow)
+        self.overflow_layoout.addWidget(self.tf_node_max_overflow_minutes)
+        self.duration_layout_min_max.addRow("Limit overflow:",
+                                           self.overflow_layoout)
 
         self.mpdj_docked_widget.setLayout(self.mpdj_options_dock_layout)
         self.mpdj_options_dock.setWidget(self.mpdj_docked_widget)

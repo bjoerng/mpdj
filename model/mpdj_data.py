@@ -78,6 +78,18 @@ class MPDJData():
         del self._song_selections
 
     @property
+    def global_min_song_duration(self):
+        return self._global_min_song_duration
+
+    @global_min_song_duration.setter:
+    def global_min_song_duration(self,p_new_value):
+        self._global_min_song_duration = p_new_value
+
+    @global_min_song_duration.deleter
+    def global_min_song_duration(self):
+        del self._global_min_song_duration
+
+    @property
     def min_units_per_node_touch(self):
         """The minimal song count per node touch.
             If enough different songs are available."""
@@ -187,6 +199,9 @@ class MPDJData():
         self._limit_artist_in_node_touch = True
         self._graph_is_directed = False
         self._functions_to_call_on_update = []
+        self._global_min_song_duration = 0
+        self._max_song_duration = 0
+        self._limit_overspill_global = False
 
     def is_connected(self, p_selection_1, p_selection_2):
         """Returns 1 if p_selection_1 has an edge to p_selection_2."""
