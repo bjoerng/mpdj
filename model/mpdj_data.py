@@ -66,6 +66,8 @@ class MPDJData():
     def song_selections(self):
         """The song selections in the mpdjData. Change content of this is discouraged
             outside of mpdjData Methods."""
+        if not hasattr(self, '_song_selections'):
+            self._song_selections = dict()
         return self._song_selections
 
     @song_selections.setter
@@ -79,9 +81,12 @@ class MPDJData():
 
     @property
     def global_min_song_duration(self):
+        """Global min song duration. Can be overwritten on a per node basis."""
+        if not hasattr(self, '_global_min_song_duration'):
+            self._global_min_song_duration = 0
         return self._global_min_song_duration
 
-    @global_min_song_duration.setter:
+    @global_min_song_duration.setter
     def global_min_song_duration(self,p_new_value):
         self._global_min_song_duration = p_new_value
 
@@ -90,9 +95,26 @@ class MPDJData():
         del self._global_min_song_duration
 
     @property
+    def global_max_song_duration(self):
+        """Global max song duration. Can be overwritten on a per node basis."""
+        if not hasattr(self, '_global_max_song_duration'):
+            self._global_max_song_duration = 0
+        return self._global_max_song_duration
+
+    @global_max_song_duration.setter
+    def global_max_song_duration(self,p_new_value):
+        self._global_max_song_duration = p_new_value
+
+    @global_max_song_duration.deleter
+    def global_max_song_duration(self):
+        del self._global_max_song_duration
+
+    @property
     def min_units_per_node_touch(self):
         """The minimal song count per node touch.
             If enough different songs are available."""
+        if not hasattr(self, '_min_units_per_node_touch'):
+            self._min_units_per_node_touch = 1
         return self._min_units_per_node_touch
 
     @min_units_per_node_touch.setter
@@ -107,6 +129,8 @@ class MPDJData():
     @property
     def max_units_per_node_touch(self):
         """The max soung count per node touch."""
+        if not hasattr(self, '_max_units_per_node_touch'):
+            self._max_units_per_node_touch = 5
         return self._max_units_per_node_touch
 
     @max_units_per_node_touch.setter
@@ -121,6 +145,8 @@ class MPDJData():
     @property
     def unit_per_node_touch(self):
         """The unit used to calculate songs per node touch."""
+        if not hasattr(self, '_unit_per_node_touch'):
+            self._unit_per_node_touch = UnitPerNodeTouch.MINUTES
         return self._unit_per_node_touch
 
     @unit_per_node_touch.setter
@@ -135,6 +161,8 @@ class MPDJData():
     @property
     def selection_connections(self):
         """The connections of song selections, represented as a dict of dicts."""
+        if not hasattr(self, '_selection_connections'):
+            self._selection_connections = dict()
         return self._selection_connections
 
     @selection_connections.setter
@@ -148,7 +176,9 @@ class MPDJData():
 
     @property
     def limit_artist_in_node_touch(self):
-        """Not used."""
+        """Not used, yet"""
+        if not hasattr(self, '_limit_artist_in_node_touch'):
+            self._limit_artist_in_node_touch = True
         return self._limit_artist_in_node_touch
 
     @limit_artist_in_node_touch.setter
@@ -161,8 +191,26 @@ class MPDJData():
         del self._limit_artist_in_node_touch
 
     @property
+    def limit_overspill_global(self):
+        """Limits overspill global, call be overwwritten per node."""
+        if not hasattr(self, '_limit_overspill_global'):
+            self._limit_overspill_global = False
+        return self._limit_overspill_global
+
+    @limit_overspill_global.setter
+    def limit_overspill_global(self,p_new_limit_overspill_global):
+        self._limit_overspill_global = p_new_limit_overspill_global
+        self._run_functions_on_updates()
+
+    @limit_overspill_global.deleter
+    def limit_overspill_global(self):
+        del self._limit_overspill_global
+
+    @property
     def graph_is_directed(self):
         """Show if the opposite direction should be markt, while editing the graph."""
+        if not hasattr(self, '_graph_is_directed'):
+            self._graph_is_directed = False
         return self._graph_is_directed
 
     @graph_is_directed.setter
@@ -175,9 +223,25 @@ class MPDJData():
         del self._graph_is_directed
 
     @property
+    def global_node_max_overflow(self):
+        if not hasattr(self, '_global_node_max_overflow'):
+            self._global_node_max_overflow = -1
+        return self._global_node_max_overflow
+
+    @global_node_max_overflow.setter
+    def global_node_max_overflow(self,p_new_max_overflow_value):
+        self._global_node_max_overflow = p_new_max_overflow_value
+
+    @global_node_max_overflow.deleter
+    def global_node_max_overflow(self):
+        del self._global_node_max_overflow
+
+    @property
     def functions_to_call_on_update(self):
         """The functions in this list will be called, when changes happen to
             the mpdjdata. This functions should be working without parameters."""
+        if hasattr(self, '_functions_to_call_on_update'):
+            self._functions_to_call_on_update
         return self._functions_to_call_on_update
 
     @functions_to_call_on_update.setter
@@ -200,8 +264,9 @@ class MPDJData():
         self._graph_is_directed = False
         self._functions_to_call_on_update = []
         self._global_min_song_duration = 0
-        self._max_song_duration = 0
+        self._global_max_song_duration = 0
         self._limit_overspill_global = False
+        self._global_node_max_overflow = -1
 
     def is_connected(self, p_selection_1, p_selection_2):
         """Returns 1 if p_selection_1 has an edge to p_selection_2."""

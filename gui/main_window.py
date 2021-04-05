@@ -75,20 +75,33 @@ class MainWindowMPDJ(QMainWindow):
     def update(self):
         """Updates the view."""
         global_properties = GlobalProperties.get_instance()
-        self.tf_min_per_selection.setText(str(global_properties.mpdj_data.min_units_per_node_touch))
-        self.tf_max_per_selection.setText(str(global_properties.mpdj_data.max_units_per_node_touch))
-        text_to_find = global_properties.mpdj_data.unit_per_node_touch.gui_representation()
+        mpdj_data = global_properties.mpdj_data
+        self.tf_min_per_selection.setText(str(mpdj_data.min_units_per_node_touch))
+        self.tf_max_per_selection.setText(str(mpdj_data.max_units_per_node_touch))
+        self.tf_min_global_song_duration.setText(str(mpdj_data.global_min_song_duration))
+        self.tf_max_global_song_duration.setText(str(mpdj_data.global_max_song_duration))
+        self.cb_global_limit_overflow.setChecked(mpdj_data.limit_overspill_global)
+        self.tf_global_node_max_overflow_minutes.setText(str(mpdj_data.global_node_max_overflow))
+        self.tf_global_node_max_overflow_minutes.setDisabled(not mpdj_data.limit_overspill_global)
+        text_to_find = mpdj_data.unit_per_node_touch.gui_representation()
         index = self.combo_box_minutes_or_titles.findText(text_to_find, Qt.MatchFixedString)
         self.combo_box_minutes_or_titles.setCurrentIndex(index)
 #        self.limit_artist_play_chk_box.setChecked(
 #            global_properties.mpdj_data.limit_artist_in_node_touch)
-        self.chk_box_graph_is_directed.setChecked(global_properties.mpdj_data.graph_is_directed)
+        self.chk_box_graph_is_directed.setChecked(mpdj_data.graph_is_directed)
         self.setWindowTitle('MPDJ: {}'.format(global_properties.path_of_current_file))
 
     def write_min_global_song_duration_to_mpdj(self):
+        """Writes min global song duration to mpdj."""
         global_properties = GlobalProperties.get_instance()
-        global_properties.mpdj_data.
-        int(self.tf_min_global_song_duration.text())
+        global_properties.mpdj_data.global_min_song_duration = int(
+            self.tf_min_global_song_duration.text())
+
+    def write_max_global_song_duration_to_mpdj(self):
+        """Writes min global song duration to mpdj."""
+        global_properties = GlobalProperties.get_instance()
+        global_properties.mpdj_data.global_max_song_duration = int(
+            self.tf_max_global_song_duration.text())
 
     def write_min_per_note_to_mpdj(self):
         """Write the selected min count per node touch to the mpdj which
@@ -116,6 +129,18 @@ class MainWindowMPDJ(QMainWindow):
         global_properties = GlobalProperties.get_instance()
         state = self.limit_artist_play_chk_box.isChecked()
         global_properties.mpdj_data.limit_artists_in_node_touch = state
+
+    def write_limit_overspill_to_mpdj(self):
+        global_properties = GlobalProperties.get_instance()
+        state = self.cb_global_limit_overflow.isChecked()
+        global_properties.mpdj_data.limit_overspill_global = state
+
+    def write_global_node_max_overflow_to_mpdj(self):
+        global_properties = GlobalProperties.get_instance()
+        global_node_max_overflow_text = self.tf_global_node_max_overflow_minutes.text()
+        if global_node_max_overflow_text:
+            new_max_overflow = int(global_node_max_overflow_text)
+            global_properties.mpdj_data.global_node_max_overflow = new_max_overflow
 
     def write_graph_is_directed_to_mpdj(self):
         """Write if the graph is directed to mpd, this should be
@@ -237,15 +262,15 @@ class MainWindowMPDJ(QMainWindow):
         self.tf_min_global_song_duration.setValidator(QIntValidator(0,2147483647))
         self.mpdj_options_dock_layout.addRow('Global min song duration:',
                                              self.tf_min_global_song_duration)
-        self.tf_min_global_song_duration.editingFinished().connect(
-            )
+        self.tf_min_global_song_duration.editingFinished.connect(
+            self.write_min_global_song_duration_to_mpdj)
 
         self.tf_max_global_song_duration = QLineEdit()
-        self.tf_max_global_song_duration.setValivation(QIntValidator(0,2147483647))
+        self.tf_max_global_song_duration.setValidator(QIntValidator(0,2147483647))
         self.mpdj_options_dock_layout.addRow('Global max song duration:',
                                              self.tf_max_global_song_duration)
-        self.tf_max_global_song_duration.editingFinished().connect(
-            self.write_max_song_duration_global_mpdj)
+        self.tf_max_global_song_duration.editingFinished.connect(
+            self.write_max_global_song_duration_to_mpdj)
 
         self.tf_min_per_selection = QLineEdit()
         self.tf_min_per_selection.setValidator(QIntValidator(0,2147483647))
@@ -266,14 +291,19 @@ class MainWindowMPDJ(QMainWindow):
 
         self.tf_global_node_max_overflow_minutes = QLineEdit()
         self.tf_global_node_max_overflow_minutes.setValidator(QIntValidator(0,2147483647))
+        self.tf_global_node_max_overflow_minutes.editingFinished.connect(
+            self.write_global_node_max_overflow_to_mpdj)
         self.cb_global_limit_overflow = QCheckBox()
         self.cb_global_limit_overflow.stateChanged.connect(
-            lambda: self.tf_global_node_max_overflow_minutes.setDisabled(
-                not self.cb_global_limit_overflow.isChecked()))
+            lambda: list(map(lambda m: m(), [
+                lambda: self.tf_global_node_max_overflow_minutes.setDisabled(
+                    not self.cb_global_limit_overflow.isChecked()),
+                self.write_limit_overspill_to_mpdj])))
         self.overflow_layoout = QHBoxLayout()
-        self.overflow_layoout.addWidget(self.cb_limit_overflow)
-        self.overflow_layoout.addWidget(self.tf_node_max_overflow_minutes)
-        self.duration_layout_min_max.addRow("Limit overflow:",
+
+        self.overflow_layoout.addWidget(self.cb_global_limit_overflow)
+        self.overflow_layoout.addWidget(self.tf_global_node_max_overflow_minutes)
+        self.mpdj_options_dock_layout.addRow("Limit overflow:",
                                            self.overflow_layoout)
 
         self.mpdj_docked_widget.setLayout(self.mpdj_options_dock_layout)

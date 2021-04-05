@@ -43,6 +43,21 @@ class GlobalProperties():
     def changes_happened_since_last_save(self):
         del self._changes_happened_since_last_save
 
+    @property
+    def path_of_current_file(self):
+        """The currently opened file."""
+        if not hasattr(self, '_path_of_current_file'):
+            self._path_of_current_file = ''
+        return self._path_of_current_file
+    
+    @path_of_current_file.setter
+    def path_of_current_file(self,p_new_path):
+        self._path_of_current_file = p_new_path
+        
+    @path_of_current_file.deleter
+    def path_of_current_file(self):
+        del self._path_of_current_file
+
     def add_listener(self, p_listener):
         """Adds a listener so if anything changes the listener will be
         informed."""
@@ -101,7 +116,7 @@ class GlobalProperties():
             # The update listeners which are informed about changes.
             self.update_listeners = []
             # The path of the file which we are working on
-            self.path_of_current_file = ''
+            self._path_of_current_file = ''
             # Indicates changes since the last save or load operation.
             self._changes_happened_since_last_save = False
             # Edit connections so the graph the graph simulates an undirected graph
