@@ -37,4 +37,5 @@ class PlayData():
         self.previous_node = None
         self.previous_song = None
         self.current_node = None
+        self.block_list_per_node = defaultdict(lambda: defaultdict(lambda: 0))
         

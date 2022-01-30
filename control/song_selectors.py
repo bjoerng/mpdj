@@ -1,6 +1,5 @@
 '''
 Created on 15.11.2020
-
 @author: Bjoern Graebe
 '''
 import math

@@ -390,3 +390,34 @@ class MPDJData():
                 if new_connections[first_node_name][second_node_name]:
                     self.set_connected(first_node_name, second_node_name, 1, False)
         self._run_functions_on_updates()
+
+    def get_max_duration_for_node(self,p_node_name : str):
+        if (p_node_name in self.song_selections.keys()
+            and hasattr(self.song_selections[p_node_name],'max_duration')
+            and self.song_selections[p_node_name].max_duration != 0):
+            return self.song_selections[p_node_name].max_duration
+        else:
+            return self.max_units_per_node_touch
+
+    def get_min_duration_for_node(self,p_node_name : str):
+        if (p_node_name in self.song_selections.keys()
+            and hasattr(self.song_selections[p_node_name],'min_duration')
+            and self.song_selections[p_node_name].min_duration != 0):
+            return self.song_selections[p_node_name].min_duration
+        else:
+            return self.min_units_per_node_touch
+        
+    def get_max_overspill_for_node(self,p_node_name : str):
+        if (p_node_name in self.song_selections.keys()
+            and hasattr(self.song_selections[p_node_name],'max_time_overflow')
+            and self.song_selections[p_node_name].min_duration != -1):
+            return self.song_selections[p_node_name].min_duration
+        else:
+            return self.min_units_per_node_touch
+        
+    def is_overflow_limited_in_node(self,p_node_name : str):
+        return (self.get_song_selection_by_name(p_node_name).limit_time_overflow
+        or self.limit_overspill_global)
+
+        
+            

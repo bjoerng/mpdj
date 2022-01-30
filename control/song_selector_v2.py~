@@ -1,0 +1,46 @@
+'''
+Created on 07.04.2021
+@author: Bjoern Graebe
+'''
+from collections import defaultdict
+from model.mpdj_data import MPDJData
+from model.mpd_connection import MPDConnection
+from model.play_data import Play_Data
+
+def song_is_equal_in_value_to_song(p_song_1 : dict, p_song_2 : dict,
+                             p_key_list : list) -> bool:
+    """Determines if a song is equal to another one by going through
+        keys in p_key_list. If one of the values is similar, this
+        returns True. False if this is not the case."""
+    for key in p_key_list:
+        if p_song_1.get(key,None) and p_song_2.get(key,None):
+            if p_song_1[key] == p_song_2[key]:
+                return True
+            # Some tags may contain a list, this is  why this  is a
+            # little more complicated
+            if not isinstance(p_song_1[key], list):
+                list1 =  [p_song_1[key]]
+            else:
+                list1 = p_song_1
+            if not isinstance(p_song_2[key], list):
+                list2 = [p_song_2[key]]
+            else:
+                list2 = p_song_2
+            for element in list1:
+                if element in list2:
+                    return True
+    return False
+
+def get_song_duration_value(song : dict, p_song_accounting_value=UnitPerNodeTouch.SONGS):
+    """Return the duration value of song, dependent on p_song_accounting_value."""
+    if p_song_accounting_value == UnitPerNodeTouch.MINUTES:
+        return float(song['duration']) / 60.0
+    return 1
+
+
+class SongSelectionMinimalPlayCount():
+    """New version of song selector, with a different set of parameters."""
+
+    def get_n_songs(self, p_mpdj_data : MPDJData, p_current_selection_name : str,
+                    p_mpd_connection: MPDConnection, p_play_data : PlayDatra
+                    
