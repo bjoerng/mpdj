@@ -45,7 +45,8 @@ class SongSelectorMinimalPlayCount():
 
     def get_n_songs(self, p_song_selection : SongSelection, p_duration_max : int,
                     p_mpd_connection : MPDConnection, p_play_data : PlayData,
-                    p_dup_attr_fltr_lst : list, p_song_account_value=UnitPerNodeTouch.SONGS):
+                    p_dup_attr_fltr_lst : list, p_song_account_value=UnitPerNodeTouch.SONGS,
+                    p_max_overspill=None):
         """Returns p_duration_max if there are enough different songs
             available. If there are less songs available, this could
             return less than p_duration_max. The other parameters of this
@@ -69,13 +70,11 @@ class SongSelectorMinimalPlayCount():
         results_length = 0
         while results_length <= p_duration_max and song_candidates:
             if (p_song_account_value == UnitPerNodeTouch.MINUTES
-                and hasattr(p_song_selection,'limit_time_exceedance')
-                and hasattr(p_song_selection, 'max_time_exceedance')
-                and p_song_selection):
+                and p_song_selection and p_max_overspill):
                 song_candidates = [ song for song in song_candidates
                                    if results_length
                                    + get_song_duration_value(song, p_song_account_value)
-                                   < p_duration_max + p_song_selection.max_time_exceedance]
+                                   < p_duration_max + p_max_overspill]
             selected_song = random.choice(song_candidates)
             result.append(selected_song)
             results_length += get_song_duration_value(selected_song, p_song_account_value)
@@ -92,7 +91,7 @@ class SongSelectorMinimalPlayCount():
                 = random.randrange(int(0.5 * song_count_in_collection),
                                    int(1.5 * song_count_in_collection))
         random.shuffle(result)
-        return result
+        return result, results_length
 
     def __init__(self):
         """Constructor"""

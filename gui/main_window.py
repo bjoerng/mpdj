@@ -81,7 +81,7 @@ class MainWindowMPDJ(QMainWindow):
         self.tf_min_global_song_duration.setText(str(mpdj_data.global_min_song_duration))
         self.tf_max_global_song_duration.setText(str(mpdj_data.global_max_song_duration))
         self.cb_global_limit_overflow.setChecked(mpdj_data.limit_overspill_global)
-        self.tf_global_node_max_overflow_minutes.setText(str(mpdj_data.global_node_max_overflow))
+        self.tf_global_node_max_overflow_minutes.setText(str(mpdj_data.global_node_max_overspill))
         self.tf_global_node_max_overflow_minutes.setDisabled(not mpdj_data.limit_overspill_global)
         text_to_find = mpdj_data.unit_per_node_touch.gui_representation()
         index = self.combo_box_minutes_or_titles.findText(text_to_find, Qt.MatchFixedString)
@@ -140,7 +140,7 @@ class MainWindowMPDJ(QMainWindow):
         global_node_max_overflow_text = self.tf_global_node_max_overflow_minutes.text()
         if global_node_max_overflow_text:
             new_max_overflow = int(global_node_max_overflow_text)
-            global_properties.mpdj_data.global_node_max_overflow = new_max_overflow
+            global_properties.mpdj_data.global_node_max_overspill = new_max_overflow
 
     def write_graph_is_directed_to_mpdj(self):
         """Write if the graph is directed to mpd, this should be

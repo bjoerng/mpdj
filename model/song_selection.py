@@ -39,12 +39,12 @@ class SongSelection():
         self.name = p_name
         self.min_duration = 0
         self.max_duration = 0
-        self.limit_time_overflow = True
-        self.max_time_overflow = 0
         # This overwrites min and max units per node from mpdj_data if
         # != -1
         self.min_song_units_per_node_touch = -1
         self.max_song_units_per_node_touch = -1
+        self._limit_overspill = False
+        self._overspill_limit = -1 
 
 
     def set_white_list_criterias(self, p_white_list_criterias : list):
@@ -114,3 +114,34 @@ class SongSelection():
         return "Name: " + self.name + ", WhiteList: "\
             + self.list_of_white_list_criterias.__repr__()\
             + ", BlackList: " + self.list_of_black_list_criterias.__repr__()
+            
+    @property
+    def limit_overspill(self):
+        """Limits overspill, overwrites the global setting for this node."""
+        if not hasattr(self, '_limit_overspill'):
+            self._limit_overspill = False
+        return self._limit_overspill
+
+    @limit_overspill.setter
+    def limit_overspill(self,p_new_limit_overspill):
+        self._limit_overspill = p_new_limit_overspill
+
+    @limit_overspill.deleter
+    def limit_overspill(self):
+        del self._limit_overspill
+        
+    @property
+    def overspill_limit(self):
+        """Limits overspill for this node, overwrites the globl overspill limit."""
+        if not hasattr(self, '_limit_overspill'):
+            self._overspill_limit = False
+        return self._overspill_limit
+
+    @overspill_limit.setter
+    def overspill_limit(self,p_new_overspill_limit):
+        self._overspill_limit = p_new_overspill_limit
+
+    @overspill_limit.deleter
+    def overspill_limit(self):
+        del self._overspill_limit        
+

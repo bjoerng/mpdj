@@ -223,17 +223,17 @@ class MPDJData():
         del self._graph_is_directed
 
     @property
-    def global_node_max_overflow(self):
+    def global_node_max_overspill(self):
         if not hasattr(self, '_global_node_max_overflow'):
             self._global_node_max_overflow = -1
         return self._global_node_max_overflow
 
-    @global_node_max_overflow.setter
-    def global_node_max_overflow(self,p_new_max_overflow_value):
+    @global_node_max_overspill.setter
+    def global_node_max_overspill(self,p_new_max_overflow_value):
         self._global_node_max_overflow = p_new_max_overflow_value
 
-    @global_node_max_overflow.deleter
-    def global_node_max_overflow(self):
+    @global_node_max_overspill.deleter
+    def global_node_max_overspill(self):
         del self._global_node_max_overflow
 
     @property
@@ -406,18 +406,6 @@ class MPDJData():
             return self.song_selections[p_node_name].min_duration
         else:
             return self.min_units_per_node_touch
-        
-    def get_max_overspill_for_node(self,p_node_name : str):
-        if (p_node_name in self.song_selections.keys()
-            and hasattr(self.song_selections[p_node_name],'max_time_overflow')
-            and self.song_selections[p_node_name].min_duration != -1):
-            return self.song_selections[p_node_name].min_duration
-        else:
-            return self.min_units_per_node_touch
-        
-    def is_overflow_limited_in_node(self,p_node_name : str):
-        return (self.get_song_selection_by_name(p_node_name).limit_time_overflow
-        or self.limit_overspill_global)
 
         
             

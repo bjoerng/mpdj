@@ -179,16 +179,16 @@ class SelectionWindow(QWidget):
         self.duration_layout_min_max.addRow('Node max. minutes:',
                                             self.tf_node_max_minutes)
 
-        self.tf_node_max_overflow_minutes = QLineEdit()
-        self.tf_node_max_overflow_minutes.setValidator(QIntValidator(0,2147483647))
+        self.tf_node_max_overspill_minutes = QLineEdit()
+        self.tf_node_max_overspill_minutes.setValidator(QIntValidator(0,2147483647))
         self.cb_limit_overflow = QCheckBox()
         self.cb_limit_overflow.stateChanged.connect(
-            lambda: self.tf_node_max_overflow_minutes.setDisabled(
+            lambda: self.tf_node_max_overspill_minutes.setDisabled(
                 not self.cb_limit_overflow.isChecked()))
         self.overflow_layoout = QHBoxLayout()
         self.overflow_layoout.addWidget(self.cb_limit_overflow)
-        self.overflow_layoout.addWidget(self.tf_node_max_overflow_minutes)
-        self.duration_layout_min_max.addRow("Limit overflow:",
+        self.overflow_layoout.addWidget(self.tf_node_max_overspill_minutes)
+        self.duration_layout_min_max.addRow("Limit overspill:",
                                            self.overflow_layoout)
 
         if self.window_mode == WindowMode.EDIT:
@@ -227,12 +227,12 @@ class SelectionWindow(QWidget):
                 self.tf_node_max_minutes.text())
         else:
             song_selection.max_song_units_per_node_touch = -1
-        song_selection.limit_time_overflow = self.cb_limit_overflow.isChecked()
-        if self.tf_node_max_overflow_minutes.text():
-            song_selection.max_time_overflow = int(
-                self.tf_node_max_overflow_minutes.text())
+        song_selection.limit_overspill = self.cb_limit_overflow.isChecked()
+        if self.tf_node_max_overspill_minutes.text():
+            song_selection.overspill_limit = int(
+                self.tf_node_max_overspill_minutes.text())
         else:
-            song_selection.max_time_overflow = 0
+            song_selection.overspill_limit= -1
 
     def add_save_button_clicked(self):
         """Is executed when the save button is clicked. Creates
@@ -274,7 +274,7 @@ class SelectionWindow(QWidget):
         self.tf_node_max_minutes.setText('-1')
         self.tf_node_min_minutes.setText('-1')
         self.cb_limit_overflow.setChecked(True)
-        self.tf_node_max_overflow_minutes.setText('0')
+        self.tf_node_max_overspill_minutes.setText('0')
         self.window_mode = WindowMode.NEW
         self.apply_mode()
 
@@ -311,12 +311,12 @@ class SelectionWindow(QWidget):
         if hasattr(song_selection, 'max_song_units_per_node_touch'):
             self.tf_node_max_minutes.setText(str(
                 song_selection.max_song_units_per_node_touch))
-        if hasattr(song_selection, 'limit_time_overflow'):
+        if hasattr(song_selection, 'limit_overspill'):
             self.cb_limit_overflow.setChecked(
-                song_selection.limit_time_overflow)
-        if hasattr(song_selection, 'max_time_overflow'):
-            self.tf_node_max_overflow_minutes.setText(str(
-                song_selection.max_time_overflow))
+                song_selection.limit_overspill)
+        if hasattr(song_selection, 'overspill_limit'):
+            self.tf_node_max_overspill_minutes.setText(str(
+                song_selection.overspill_limit))
 
     def closeEvent(self, *args, **kwargs):
         """Will be executed, when window is closed."""
