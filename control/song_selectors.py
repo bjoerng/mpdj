@@ -59,6 +59,8 @@ class SongSelectorMinimalPlayCount():
                              [song_url['file']] > 0 ]
         minimal_play_count = math.inf
         song_candidates = list()
+        # Filter out all songs play more often than others songs of this node. So songs
+        # with minimal playcount stay.
         for song_url in songs_in_collection:
             song_play_count = p_play_data.song_play_data['file'][song_url['file']]
             if song_play_count < minimal_play_count:
@@ -66,30 +68,37 @@ class SongSelectorMinimalPlayCount():
                 song_candidates = list()
             if song_play_count <= minimal_play_count:
                 song_candidates.append(song_url)
+        
+        # Build list of results.
         result = list()
         results_length = 0
         while results_length <= p_duration_max and song_candidates:
             if (p_song_account_value == UnitPerNodeTouch.MINUTES
                 and p_song_selection and p_max_overspill):
+                # Filter out songs which would are to long for the overspill.
                 song_candidates = [ song for song in song_candidates
                                    if results_length
                                    + get_song_duration_value(song, p_song_account_value)
                                    < p_duration_max + p_max_overspill]
-            selected_song = random.choice(song_candidates)
-            result.append(selected_song)
-            results_length += get_song_duration_value(selected_song, p_song_account_value)
-
-            song_candidates = [ song for song in song_candidates
-                              if not song_is_equal_in_value_to_song(selected_song,
+            if song_candidates:
+                selected_song = random.choice(song_candidates)
+                result.append(selected_song)
+                results_length += get_song_duration_value(selected_song, p_song_account_value)
+                song_candidates = [ song for song in song_candidates
+                                   if not song_is_equal_in_value_to_song(selected_song,
                                                           song,
                                                           p_dup_attr_fltr_lst)]
+        # Update song block list to prevent playing songs to often.
         for song in result:
+            # Reducing the block count for all songs in 
             for key in self.song_block_list[p_song_selection.get_name()].keys():
                 self.song_block_list[p_song_selection.get_name()][key]\
                     = max(0, self.song_block_list[p_song_selection.get_name()][key] - 1)
+            # Aadd song to blacklist for a random time. To make sure it isn't played
+            # again for some time.  
             self.song_block_list[p_song_selection.get_name()][song['file']]\
                 = random.randrange(int(0.5 * song_count_in_collection),
-                                   int(1.5 * song_count_in_collection))
+                                   int(0.9 * song_count_in_collection))
         random.shuffle(result)
         return result, results_length
 
