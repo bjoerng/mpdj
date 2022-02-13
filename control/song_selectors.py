@@ -74,7 +74,7 @@ class SongSelectorMinimalPlayCount():
         results_length = 0
         while results_length <= p_duration_max and song_candidates:
             if (p_song_account_value == UnitPerNodeTouch.MINUTES
-                and p_song_selection and p_max_overspill):
+                and p_song_selection and p_max_overspill and p_max_overspill != -1):
                 # Filter out songs which would are to long for the overspill.
                 song_candidates = [ song for song in song_candidates
                                    if results_length

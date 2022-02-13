@@ -85,10 +85,10 @@ class MPDJRunnerV2():
         return songs_length
 
     def run(self):
-        """Runs the mpdj. Clears the playlist, configures the mpd to
+        """Runs the mpdj. Configures the mpd to
             run mpdj and ensures it is playing."""
-        self.mpd_connection.clear()
         while self.keep_running:
+            self.mpd_connection.ensure_working_connection()
             self.mpd_connection.set_mpd_to_run_mpdj()
             node_play_length = self.add_songs()
             length_in_minutes = str(format_timedelta(datetime.timedelta(minutes=node_play_length)))
@@ -115,3 +115,6 @@ class MPDJRunnerV2():
         self.play_data = PlayData()
         self.node_selector = NodeSelectionMinimalAveragePlaycountWeightedProbabilities()
         self.song_selector = SongSelectorMinimalPlayCount()
+        
+    def clear_playlist(self):
+        self.mpd_connection.clear()
