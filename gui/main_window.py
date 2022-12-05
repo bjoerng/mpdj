@@ -15,7 +15,13 @@ from gui.merge_nodes_window import open_merge_node_window
 from control.global_properties import GlobalProperties, new_mpdj_data
 from model.constants import FILE_SUFFIX
 from model.mpdj_data import UnitPerNodeTouch
+from gui.mpd_connection_window import MPDConnectionWindow
 
+def create_mpd_connection_window():
+    """Create MPD Connection window."""
+    mpd_connection_window = MPDConnectionWindow()
+    GlobalProperties.get_instance().opened_windows.append(mpd_connection_window)
+    mpd_connection_window.show()
 
 def create_add_selection_window():
     """Opens a new selection window with an empty selection."""
@@ -222,6 +228,9 @@ class MainWindowMPDJ(QMainWindow):
                     message_box.setIcon(QMessageBox.Warning)
                     message_box.exec_()
 
+
+        
+
     def __init__(self):
         """Constructor"""
         QMainWindow.__init__(self)
@@ -240,9 +249,12 @@ class MainWindowMPDJ(QMainWindow):
         self.menu_file.addAction('Save as', self.file_save_as)
         self.menu_file.addSeparator()
         self.menu_file.addAction('Exit',sys.exit)
+        
+        self.menu_edit = self.menu_bar.addMenu('Edit')
+        self.menu_edit.addAction('MPD Connections', create_mpd_connection_window)
 
-        self.menu_file = self.menu_bar.addMenu('Connections')
-        self.make_birectional_menu = self.menu_file.addMenu('Make bidirectional')
+        self.menu_connections = self.menu_bar.addMenu('Connections')
+        self.make_birectional_menu = self.menu_connections.addMenu('Make bidirectional')
         self.make_birectional_menu.addAction("with and", make_bidirectional_and)
         self.make_birectional_menu.addAction("with or", make_bidirectional_or)
 

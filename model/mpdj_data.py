@@ -70,6 +70,9 @@ class MPDJData():
             self._song_selections = dict()
         return self._song_selections
 
+    def get_song_selections_count(self):
+        return len(self._song_selections)
+
     @song_selections.setter
     def song_selections(self,p_new_value):
         self._song_selections = p_new_value

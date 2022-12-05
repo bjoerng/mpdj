@@ -10,16 +10,14 @@ import sys
 import argparse
 import jsonpickle
 from control.mpdj_runner_v2 import MPDJRunnerV2
-parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--file', help="The MPDJ file to run",required=True)
-parser.add_argument('-A', '--address', help="The HOST IP address to connect to")
-#parser.add_argument('-A', '--HOST-address')
-parser.add_argument('-p', '--port', help="The PORT to connect to")
-parser.add_argument('-k', '--keep-current-playlist', help="Keep current playlist and append if necessary.", action="store_true")
-#parser.add_argument('-p', '--PORT')
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--file', help="The MPDJ file to run",required=True)
+    parser.add_argument('-A', '--address', help="The HOST IP address to connect to")
+    parser.add_argument('-p', '--port', help="The PORT to connect to")
+    parser.add_argument('-k', '--keep-current-playlist', help="Keep current playlist and append if necessary.", action="store_true")
     args = parser.parse_args()
     if args.address:
         HOST = args.address

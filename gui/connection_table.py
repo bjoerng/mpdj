@@ -130,41 +130,51 @@ class ConnectionTableWidget(QTableWidget):
         if not isinstance(self.cellWidget(self.rowCount() - 1, self.columnCount() - 1),QLabel):
             self.setCellWidget(self.rowCount() - 1, self.columnCount() - 1,QLabel())
         self.cellWidget(self.rowCount() - 1, self.columnCount() - 1).setText('')
-
-    def show_header_right_click_menu(self, position):
-        """Display the menu for header actions."""
-        menu = QMenu()
-
-        add_selection = menu.addAction('Add selection')
+        
+    def add_alter_song_selection_menu_itrem(self,menu):
         change_selection = menu.addAction('Change song selection')
         copy_selected_selection = menu.addAction('Copy song selection')
         copy_selected_selection_with_connections = menu.addAction(
             'Copy song selection with connection')
         remove_selection = menu.addAction('Remove song selection')
-        action = menu.exec_(self.mapToGlobal(position))
+        return change_selection, copy_selected_selection, copy_selected_selection_with_connections, remove_selection
+        
+
+    def show_header_right_click_menu(self, position):
+        """Display the menu for header actions."""
+        menu = QMenu()
         logical_index_x = self.horizontal_headers.logicalIndexAt(position.x())
         logical_index_y = self.vertical_headers.logicalIndexAt(position.y())
+        add_selection = menu.addAction('Add selection')
         name_of_selection = ''
+        global_properties = GlobalProperties.get_instance()
+        selections_count = global_properties.mpdj_data.get_song_selections_count()    
+        change_selection = copy_selected_selection = copy_selected_selection_with_connections = remove_selection = None
         if logical_index_x > logical_index_y:
             name_of_selection = self.verticalHeaderItem(logical_index_x).text()
+            if logical_index_x < selections_count:
+                change_selection, copy_selected_selection, copy_selected_selection_with_connections, remove_selection = self.add_alter_song_selection_menu_itrem(menu)
         else:
             name_of_selection = self.horizontalHeaderItem(logical_index_y).text()
-        global_properties = GlobalProperties.get_instance()
-        if action == remove_selection:
+            if logical_index_x < selections_count:
+                change_selection, copy_selected_selection, copy_selected_selection_with_connections, remove_selection = self.add_alter_song_selection_menu_itrem(menu)
+                
+        action = menu.exec_(self.mapToGlobal(position))
+        if remove_selection and action == remove_selection:
             global_properties.mpdj_data.remove_song_selection_by_name(name_of_selection)
             global_properties.inform_update_listener()
             return
-        if action == change_selection:
+        if change_selection and action == change_selection:
             open_selection_window(WindowMode.EDIT, name_of_selection)
             return
         selection = global_properties.mpdj_data.get_song_selection_by_name(name_of_selection)
-        if action == copy_selected_selection:
+        if copy_selected_selection and action == copy_selected_selection:
             copy_selection(selection, False)
             return
-        if action == copy_selected_selection_with_connections:
+        if copy_selected_selection_with_connections and action == copy_selected_selection_with_connections:
             copy_selection(selection,True)
             return
-        if action == add_selection:
+        if add_selection and action == add_selection:
             open_selection_window(WindowMode.NEW)
 
     def __init__(self):

@@ -103,10 +103,9 @@ class GlobalProperties():
         """ Virtually private constructor. """
         if GlobalProperties.__instance is not None:
             raise Exception("This class is a singleton!")
-        if os.path.isfile('./path_of_file'):
-            self.load_config_from_file()
         else:
             GlobalProperties.__instance = self
+            # Configuration Document for mpdj_Builder.
             # The momentary connection we are using.
             self.mpd_connection = MPDConnection('localhost', '6600')
             self.mpd_connection.connect()

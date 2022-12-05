@@ -10,8 +10,7 @@ from PyQt5.Qt import QLineEdit, QHBoxLayout, Qt, QTableWidgetItem, QFormLayout, 
 from model.song_selection import SongSelection
 from control.global_properties import GlobalProperties
 from gui.criterias_table import CriteriaTable
-
-PLUSBUTTONWITH = 50
+from gui.gui_constants import *
 
 class WindowMode(Enum):
     """This Enum represents the Mode of the selection window.
@@ -132,12 +131,12 @@ class SelectionWindow(QWidget):
 
 #         self.bt_del_line_white_list_table = QPushButton('\N{heavy minus sign}')
 #         self.bt_del_line_white_list_table.clicked.connect(self.add_row_to_white_list_table)
-#         self.bt_del_line_white_list_table.setMaximumWidth(PLUSBUTTONWITH)
+#         self.bt_del_line_white_list_table.setMaximumWidth(PLUSBUTTONWIDTH)
 #         self.bt_add_line_to_white_list_table_layout.addWidget(self.bt_del_line_white_list_table)
 
         self.bt_add_line_to_white_list_table = QPushButton('\N{heavy plus sign}')
         self.bt_add_line_to_white_list_table.clicked.connect(self.add_row_to_white_list_table)
-        self.bt_add_line_to_white_list_table.setMaximumWidth(PLUSBUTTONWITH)
+        self.bt_add_line_to_white_list_table.setMaximumWidth(PLUSBUTTONWIDTH)
         self.bt_add_line_to_white_list_table_layout.addWidget(self.bt_add_line_to_white_list_table)
         self.main_layout.addLayout(self.bt_add_line_to_white_list_table_layout)
 
@@ -151,7 +150,7 @@ class SelectionWindow(QWidget):
         self.bt_add_line_to_black_list_table_layout.setAlignment(Qt.AlignRight)
         self.bt_add_line_to_black_list_table = QPushButton('\N{heavy plus sign}')
         self.bt_add_line_to_black_list_table.clicked.connect(self.add_row_to_black_list_table)
-        self.bt_add_line_to_black_list_table.setMaximumWidth(PLUSBUTTONWITH)
+        self.bt_add_line_to_black_list_table.setMaximumWidth(PLUSBUTTONWIDTH)
         self.bt_add_line_to_black_list_table_layout.addWidget(self.bt_add_line_to_black_list_table)
         self.main_layout.addLayout(self.bt_add_line_to_black_list_table_layout)
 
@@ -293,30 +292,31 @@ class SelectionWindow(QWidget):
         global_properties = GlobalProperties.get_instance()
         song_selection = global_properties.mpdj_data.get_song_selection_by_name(
             p_song_selection_name)
-        white_list_criterias = song_selection.list_of_white_list_criterias
-        black_list_criterias = song_selection.list_of_black_list_criterias
-        fill_criteria_table_with_data(self.selection_white_list_table,white_list_criterias)
-        fill_criteria_table_with_data(self.selection_black_list_table, black_list_criterias)
-        if hasattr(song_selection, 'min_duration'):
-            self.tf_duration_min.setText(str(song_selection.min_duration))
-        else:
-            self.tf_duration_min.setText('0')
-        if hasattr(song_selection, 'max_duration'):
-            self.tf_duration_max.setText(str(song_selection.max_duration))
-        else:
-            self.tf_duration_max.setText('0')
-        if hasattr(song_selection, 'min_song_units_per_node_touch'):
-            self.tf_node_min_minutes.setText(str(
-                song_selection.min_song_units_per_node_touch))
-        if hasattr(song_selection, 'max_song_units_per_node_touch'):
-            self.tf_node_max_minutes.setText(str(
-                song_selection.max_song_units_per_node_touch))
-        if hasattr(song_selection, 'limit_overspill'):
-            self.cb_limit_overflow.setChecked(
-                song_selection.limit_overspill)
-        if hasattr(song_selection, 'overspill_limit'):
-            self.tf_node_max_overspill_minutes.setText(str(
-                song_selection.overspill_limit))
+        if song_selection:
+            white_list_criterias = song_selection.list_of_white_list_criterias
+            black_list_criterias = song_selection.list_of_black_list_criterias
+            fill_criteria_table_with_data(self.selection_white_list_table,white_list_criterias)
+            fill_criteria_table_with_data(self.selection_black_list_table, black_list_criterias)
+            if hasattr(song_selection, 'min_duration'):
+                self.tf_duration_min.setText(str(song_selection.min_duration))
+            else:
+                self.tf_duration_min.setText('0')
+            if hasattr(song_selection, 'max_duration'):
+                self.tf_duration_max.setText(str(song_selection.max_duration))
+            else:
+                self.tf_duration_max.setText('0')
+            if hasattr(song_selection, 'min_song_units_per_node_touch'):
+                self.tf_node_min_minutes.setText(str(
+                    song_selection.min_song_units_per_node_touch))
+            if hasattr(song_selection, 'max_song_units_per_node_touch'):
+                self.tf_node_max_minutes.setText(str(
+                    song_selection.max_song_units_per_node_touch))
+            if hasattr(song_selection, 'limit_overspill'):
+                self.cb_limit_overflow.setChecked(
+                    song_selection.limit_overspill)
+            if hasattr(song_selection, 'overspill_limit'):
+                self.tf_node_max_overspill_minutes.setText(str(
+                    song_selection.overspill_limit))
 
     def closeEvent(self, *args, **kwargs):
         """Will be executed, when window is closed."""
