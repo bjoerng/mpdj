@@ -37,7 +37,10 @@ def song_is_equal_in_value_to_song(p_song_1 : dict, p_song_2 : dict,
 def get_song_duration_value(song : dict, p_song_accounting_value=UnitPerNodeTouch.SONGS):
     """Return the duration value of song, dependent on p_song_accounting_value."""
     if p_song_accounting_value == UnitPerNodeTouch.MINUTES:
-        return float(song['duration']) / 60.0
+        try:
+            return float(song['duration']) / 60.0
+        except KeyError:
+            print(song)
     return 1
 
 class SongSelectorMinimalPlayCount():
@@ -94,8 +97,9 @@ class SongSelectorMinimalPlayCount():
             for key in self.song_block_list[p_song_selection.get_name()].keys():
                 self.song_block_list[p_song_selection.get_name()][key]\
                     = max(0, self.song_block_list[p_song_selection.get_name()][key] - 1)
-            # Aadd song to blacklist for a random time. To make sure it isn't played
+            # Add song to blacklist for a random time. To make sure it isn't played
             # again for some time.  
+            # TODO There is a bug here, possible when list only contains no or one song
             self.song_block_list[p_song_selection.get_name()][song['file']]\
                 = random.randrange(int(0.5 * song_count_in_collection),
                                    int(0.9 * song_count_in_collection))
