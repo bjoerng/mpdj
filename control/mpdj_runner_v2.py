@@ -35,7 +35,7 @@ def format_timedelta(delta: datetime.timedelta) -> str:
 
     return time_fmt
 
-class MPDJRunnerV2():
+class MPDJRunnerV2(object):
     """Runs an mpdj."""
 
     def add_songs(self):
@@ -92,11 +92,16 @@ class MPDJRunnerV2():
             self.mpd_connection.set_mpd_to_run_mpdj()
             node_play_length = self.add_songs()
             length_in_minutes = str(format_timedelta(datetime.timedelta(minutes=node_play_length)))
-            print ('Selected node: {}, Length: {}'.format(self.play_data.current_node, str(length_in_minutes)))
+            print ('Selected node: {}, Length: {}'.format(self.play_data.current_node,
+                                                          str(length_in_minutes)))
             print ('______________________________________________________________________')
             self.mpd_connection.ensure_is_playing()
             next_nodes_with_probabilities = self.node_selector.get_possible_next_nodes_with_probabilities(
-            self.play_data.current_node,self.mpdj_data,self.play_data,self.mpd_connection)
+                                                                                                self.play_data.current_node,
+                                                                                                self.mpdj_data,
+                                                                                                self.play_data,
+                                                                                                self.mpd_connection)
+            print(next_nodes_with_probabilities)
             print ('Next nodes with probability:')
             for node_prob in sorted(next_nodes_with_probabilities.items(), key=lambda x: x[1]):
                 print ('{}: {:.2%}'.format(node_prob[0], node_prob[1]))

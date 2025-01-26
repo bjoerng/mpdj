@@ -7,6 +7,7 @@ import os
 import jsonpickle
 from model.mpd_connection import MPDConnection
 from model.mpdj_data import MPDJData
+from control.mpdj_configuration import *
 
 def new_mpdj_data():
     """Discard the mpdj data and create a new on."""
@@ -61,7 +62,13 @@ class GlobalProperties():
     def add_listener(self, p_listener):
         """Adds a listener so if anything changes the listener will be
         informed."""
-        self.update_listeners.append(p_listener)
+        self._update_listeners.append(p_listener)
+        
+    def remove_listener(self, p_listener):
+        """Remove a listener if it is registered as a listener it will
+        be removed. If p_listener is not registered, nothing happens."""
+        if p_listener in self._update_listeners:
+            self._update_listeners.remove(p_listener)
 
     def load_config_from_file(self):
         """This sould load a config from a config file.
@@ -70,7 +77,7 @@ class GlobalProperties():
 
     def inform_update_listener(self):
         """This method inform all added listeners about changes."""
-        for update_listener in self.update_listeners:
+        for update_listener in self._update_listeners:
             update_listener.update()
 
     def save_mpdj_data_to_file(self, p_file_name):
@@ -105,6 +112,7 @@ class GlobalProperties():
             raise Exception("This class is a singleton!")
         else:
             GlobalProperties.__instance = self
+            self.configuration = MPDJConfiguration()
             # Configuration Document for mpdj_Builder.
             # The momentary connection we are using.
             self.mpd_connection = MPDConnection('localhost', '6600')
@@ -113,7 +121,7 @@ class GlobalProperties():
             self.mpdj_data = MPDJData()
             self.mpdj_data.add_function_to_call_on_change(inform_about_changes_in_mpdj)
             # The update listeners which are informed about changes.
-            self.update_listeners = []
+            self._update_listeners = []
             # The path of the file which we are working on
             self._path_of_current_file = ''
             # Indicates changes since the last save or load operation.
@@ -122,3 +130,4 @@ class GlobalProperties():
 #            self.edit_both_directions = True
             # The current opened windows.
             self.opened_windows = list()
+            

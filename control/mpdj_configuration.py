@@ -3,8 +3,11 @@ Created on 13.02.2022
 
 @author: Bjoern Graebe
 '''
+KEY_NAME="Name"
+KEY_HOSTNAME="Hostname"
+KEY_PORT="Port"
+KEY_PASSWORD="Password"
 
-from collections import defaultdict
 
 class MPDJConfiguration(object):
     '''
@@ -21,5 +24,5 @@ class MPDJConfiguration(object):
         '''
         Constructor
         '''
-        self.connections = dict()
+        self.connections = []
         

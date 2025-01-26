@@ -11,9 +11,10 @@ def is_song_matching_criteria(p_song : dict, p_criteria : dict) -> bool :
     if len(p_criteria) == 0:
         return False
     for key in p_criteria:
-        if key not  in p_song.keys() or p_song[key] != p_criteria[key]:
-            if key not  in p_song.keys():
-                print ( "Missing key" + key + " in " + str(p_song) )
+        if key not in p_song.keys() or p_song[key] != p_criteria[key]:
+            if key not in p_song.keys():
+                print ( "Missing key: " + key + " in " + str(p_song) )
+            #print (p_song[key] + "!=" + p_criteria[key])
             return False
     return True
 

@@ -54,22 +54,17 @@ class NodeSelectionMinimalAveragePlaycountWeightedProbabilities():
                          p_play_data : PlayData,
                          p_mpd_connection : MPDConnection) -> str:
         """Returns the next neighbour, according to a random choice
-            weighted by songs in collected divided by 1 plays
+            weighted by songs in collected divided by 1 + plays
             of songs in this node."""
         random.seed()
         neighbour_node_names = p_mpdj_data.get_neighbours_for_node_name(p_node_name_now)
-        # If node does not have any neighbours, we will select a random one from the set
-        # of all neighbours.
-        if len(neighbour_node_names) < 1:
-            print('No neighbours for {} considering all nodes as next'.format(p_node_name_now))
-            neighbour_node_names = p_mpdj_data.get_song_selection_names()
-        if len(neighbour_node_names) > 1 and p_play_data.previous_node in neighbour_node_names:
-            neighbour_node_names.remove(p_play_data.previous_node)
-
         nodes_with_song_count_not_zero = self.get_possible_next_neighbours(p_node_name_now,
                                                                            p_mpdj_data,
                                                                            p_play_data,
                                                                            p_mpd_connection)
+        if len(nodes_with_song_count_not_zero) < 1:
+            print('\nAll nodes have zero songs, stopping', file=sys.stderr)
+            exit(1)
         node_weights = calculate_node_weight_with_song_play_count(
             p_play_data,
             list(nodes_with_song_count_not_zero.values()))
@@ -107,7 +102,6 @@ class NodeSelectionMinimalAveragePlaycount():
             count, selected randomly."""
         random.seed()
         neighbour_node_names = p_mpdj_data.get_neighbours_for_node_name(p_node_name_now)
-        print (neighbour_node_names)
         candidates_with_minimal_average_play_count = list()
         min_average = math.inf
         if p_play_data.previous_node and p_play_data.previous_node in neighbour_node_names:

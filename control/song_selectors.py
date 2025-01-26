@@ -4,7 +4,6 @@ Created on 15.11.2020
 '''
 import math
 import random
-from collections import defaultdict
 from model.song_selection import SongSelection
 from model.mpd_connection import MPDConnection
 from model.play_data import PlayData
@@ -56,10 +55,6 @@ class SongSelectorMinimalPlayCount():
             method evaluated to generate a song selection."""
         random.seed()
         songs_in_collection = p_song_selection.get_songs(p_mpd_connection)
-        song_count_in_collection = len(songs_in_collection)
-        songs_in_collection = [song_url for song_url in songs_in_collection if not
-                             self.song_block_list[p_song_selection.get_name()]
-                             [song_url['file']] > 0 ]
         minimal_play_count = math.inf
         song_candidates = list()
         # Filter out all songs play more often than others songs of this node. So songs
@@ -75,10 +70,10 @@ class SongSelectorMinimalPlayCount():
         # Build list of results.
         result = list()
         results_length = 0
-        while results_length <= p_duration_max and song_candidates:
+        while results_length < p_duration_max and song_candidates:
             if (p_song_account_value == UnitPerNodeTouch.MINUTES
                 and p_song_selection and p_max_overspill and p_max_overspill != -1):
-                # Filter out songs which would are to long for the overspill.
+                # Filter out songs which would be to long for the overspill.
                 song_candidates = [ song for song in song_candidates
                                    if results_length
                                    + get_song_duration_value(song, p_song_account_value)
@@ -91,21 +86,8 @@ class SongSelectorMinimalPlayCount():
                                    if not song_is_equal_in_value_to_song(selected_song,
                                                           song,
                                                           p_dup_attr_fltr_lst)]
-        # Update song block list to prevent playing songs to often.
-        for song in result:
-            # Reducing the block count for all songs in 
-            for key in self.song_block_list[p_song_selection.get_name()].keys():
-                self.song_block_list[p_song_selection.get_name()][key]\
-                    = max(0, self.song_block_list[p_song_selection.get_name()][key] - 1)
-            # Add song to blacklist for a random time. To make sure it isn't played
-            # again for some time.  
-            # TODO There is a bug here, possible when list only contains no or one song
-            self.song_block_list[p_song_selection.get_name()][song['file']]\
-                = random.randrange(int(0.5 * song_count_in_collection),
-                                   int(0.9 * song_count_in_collection))
         random.shuffle(result)
         return result, results_length
 
     def __init__(self):
         """Constructor"""
-        self.song_block_list = defaultdict(lambda: defaultdict(lambda: 0))
