@@ -6,7 +6,7 @@ Created on 12.09.2020
 @author: Bjoern Graebe
 '''
 
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 from gui.main_window import MainWindowMPDJ
 
 
@@ -15,4 +15,4 @@ if __name__ == '__main__':
     qtApp = QApplication([])
     mw = MainWindowMPDJ()
     mw.show()
-    qtApp.exec_()
+    qtApp.exec()
