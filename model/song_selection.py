@@ -74,7 +74,13 @@ class SongSelection():
         for criteria in self.list_of_white_list_criterias:
             criteria_results = p_mpd_connection.get_files_matching_criteria(criteria)
             results += criteria_results
-        return results
+        # Making the results unique
+        # TODO This should rather be a dict with the file-path as key.
+        seen_songs = set()
+        uniq_results = [song for song in results
+                        if tuple(song.items()) not in seen_songs
+                        and not seen_songs.add(tuple(song.items()))]
+        return uniq_results
 
     def get_songs(self,p_mpdconnection) -> list():
         """Retrieves the songs which match on of the whitelist criterias,

@@ -5,12 +5,7 @@ Created on 13.02.2022
 '''
 
 import copy
-from dns.rdataclass import NONE
-KEY_NAME="Name"
-KEY_HOSTNAME="Hostname"
-KEY_PORT="Port"
-KEY_PASSWORD="Password"
-
+from model.mpd_connection_document import MPD_Connection_Document
 
 class MPDJConfiguration(object):
     '''
@@ -23,8 +18,9 @@ class MPDJConfiguration(object):
     def __setstate__(self, p_state):
         self.__dict__.update(p_state)
         
-    def add_connetion(self, p_name, p_properties):
-        self._connections[p_name]=p_properties
+    def add_connection(self, p_connection: MPD_Connection_Document):
+        self._connections[p_connection.name]=p_connection
+        self.last_selected_connection = p_connection.name
         
     def get_connections_copy(self):
         return copy.deepcopy(self._connections)
@@ -39,11 +35,18 @@ class MPDJConfiguration(object):
         print(self._connections)
         if p_name in self._connections:
             self._connections.pop(p_name)
-        print(self._connections) 
+        print(self._connections)
+        
+    def modify_selected_connection(self,p_modifications: MPD_Connection_Document):
+        if self.last_selected_connection:
+            del self._connections[self.last_selected_connection]
+        self._connections[p_modifications.name]=p_modifications
+        self.last_selected_connection = p_modifications.name
 
     def __init__(self):
         '''
         Constructor
         '''
         self._connections = dict()
+        self.last_selected_connection = None
         

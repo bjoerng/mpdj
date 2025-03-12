@@ -7,7 +7,7 @@ import os
 import jsonpickle
 from model.mpd_connection import MPDConnection
 from model.mpdj_data import MPDJData
-from control.mpdj_configuration import *
+from control.mpdj_configuration import MPDJConfiguration
 
 def new_mpdj_data():
     """Discard the mpdj data and create a new on."""
@@ -74,7 +74,7 @@ class GlobalProperties():
         """This sould load a config from a config file.
             Not implemented, yet."""
         #TODO
-
+        
     def inform_update_listener(self):
         """This method inform all added listeners about changes."""
         for update_listener in self._update_listeners:

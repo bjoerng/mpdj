@@ -108,4 +108,4 @@ class MPDConnection():
         # them up, to get a list for the find method of mpd.
         # Takes is time to understand.
         results = self.mpd_client.find(*sum(things_to_find.items(),()))
-        return results
+        return (results)
