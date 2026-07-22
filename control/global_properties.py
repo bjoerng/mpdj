@@ -3,7 +3,6 @@ Created on 20.09.2020
 
 @author: Bjoern Graebe
 '''
-import os
 import jsonpickle
 from model.mpd_connection import MPDConnection
 from model.mpdj_data import MPDJData

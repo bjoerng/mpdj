@@ -123,9 +123,8 @@ class NodeSelectionMinimalAveragePlaycount():
                 min_average = play_count_average
             if play_count_average <= min_average:
                 candidates_with_minimal_average_play_count.append(node_name)
-        print (candidates_with_minimal_average_play_count)
+        #print (candidates_with_minimal_average_play_count)
         choice = random.choice(candidates_with_minimal_average_play_count)
-        print (choice)
         return choice
 
     def __init__(self):

@@ -72,7 +72,6 @@ class MPDJRunnerV2(object):
             else:
                 print('Overspill for node is limited but not specified. Assuming no overspill limit for node.')
         
-        print ("current_node: ", current_node, "song_count:", song_count, "max_overspill: ", max_overspill)
         next_songs, songs_length = self.song_selector.get_n_songs(current_node, song_count,
                                                 self.mpd_connection,
                                                 self.play_data,
@@ -101,7 +100,6 @@ class MPDJRunnerV2(object):
                                                                                                 self.mpdj_data,
                                                                                                 self.play_data,
                                                                                                 self.mpd_connection)
-            print(next_nodes_with_probabilities)
             print ('Next nodes with probability:')
             for node_prob in sorted(next_nodes_with_probabilities.items(), key=lambda x: x[1]):
                 print ('{}: {:.2%}'.format(node_prob[0], node_prob[1]))
